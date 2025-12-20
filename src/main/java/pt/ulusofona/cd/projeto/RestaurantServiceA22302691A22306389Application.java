@@ -1,4 +1,4 @@
-package pt.ulusofona.cd;
+package pt.ulusofona.cd.projeto;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

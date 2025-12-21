@@ -4,9 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 import pt.ulusofona.cd.projeto.dto.MenuItemRequest;
 import pt.ulusofona.cd.projeto.dto.MenuItemResponse;
 import pt.ulusofona.cd.projeto.mapper.MenuItemMapper;
@@ -27,6 +25,10 @@ public class MenuItemService {
         return repository.findAll();
     }
 
+    public MenuItem getMenuItemById(Long menuItemId){
+        return repository.findById(menuItemId).orElseThrow();
+    }
+
 
 
 
@@ -34,5 +36,31 @@ public class MenuItemService {
     public MenuItem createMenuItem(MenuItemRequest request){
         MenuItem item = MenuItemMapper.toEntity(request);
         return repository.save(item);
+    }
+
+
+
+
+    // Put
+    public MenuItem updateMenuItem(Long menuItemId, MenuItemRequest request){
+        MenuItem menuItem = repository.findById(menuItemId).orElseThrow();
+
+        menuItem.setRestaurant_id(request.getRestaurant_id());
+        menuItem.setName(request.getName());
+        menuItem.setDescription(request.getDescription());
+        menuItem.setPrice(request.getPrice());
+        menuItem.setCurrency(request.getCurrency());
+
+        return repository.save(menuItem);
+    }
+
+
+
+
+    // Delete
+    public MenuItem deleteMenuItem(Long menuItemId){
+        MenuItem menuItem = repository.findById(menuItemId).orElseThrow();
+        repository.deleteById(menuItemId);
+        return menuItem;
     }
 }

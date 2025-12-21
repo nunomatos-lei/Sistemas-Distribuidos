@@ -12,7 +12,6 @@ import pt.ulusofona.cd.projeto.model.Restaurant;
 import pt.ulusofona.cd.projeto.service.RestaurantService;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/restaurants")
@@ -24,10 +23,17 @@ public class RestaurantController {
 
     // Get
     @GetMapping
-    public ResponseEntity<List<RestaurantResponse>> getRestaurants() {
+    public ResponseEntity<List<RestaurantResponse>> getAllRestaurants() {
         List<RestaurantResponse> responses;
-        responses = service.getAll().stream().map(RestaurantMapper::toResponse).toList();
+        responses = service.getAllRestaurants().stream().map(RestaurantMapper::toResponse).toList();
         return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping("/{restaurantId}")
+    public ResponseEntity<RestaurantResponse> getRestaurantById(@PathVariable Long restaurantId) {
+        Restaurant restaurant = service.getRestaurantById(restaurantId);
+        RestaurantResponse response = RestaurantMapper.toResponse(restaurant);
+        return ResponseEntity.ok(response);
     }
 
 
@@ -41,4 +47,25 @@ public class RestaurantController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+
+
+
+    // Put
+    @PutMapping("/{restaurantId}")
+    public ResponseEntity<RestaurantResponse> updateRestaurant(@PathVariable Long restaurantId, @Valid @RequestBody RestaurantRequest request){
+        Restaurant restaurant = service.updateRestaurant(restaurantId, request);
+        RestaurantResponse response = RestaurantMapper.toResponse(restaurant);
+        return ResponseEntity.ok(response);
+    }
+
+
+
+
+    // Delete
+    @DeleteMapping("/{restaurantId}")
+    public ResponseEntity<RestaurantResponse> deleteRestaurant(@PathVariable Long restaurantId){
+        Restaurant restaurant = service.deleteRestaurant(restaurantId);
+        RestaurantResponse response = RestaurantMapper.toResponse(restaurant);
+        return ResponseEntity.ok(response);
+    }
 }

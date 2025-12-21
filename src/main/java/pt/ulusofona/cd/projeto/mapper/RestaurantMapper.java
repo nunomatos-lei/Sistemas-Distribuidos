@@ -18,6 +18,7 @@ public class RestaurantMapper {
 
     public static RestaurantResponse toResponse(Restaurant restaurant){
         RestaurantResponse response = new RestaurantResponse();
+        response.setId(restaurant.getId());
         response.setName(restaurant.getName());
         response.setCity(restaurant.getCity());
         response.setCountry(restaurant.getCountry());

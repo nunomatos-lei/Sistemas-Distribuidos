@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import pt.ulusofona.cd.projeto.dto.RestaurantRequest;
 import pt.ulusofona.cd.projeto.dto.RestaurantResponse;
 import pt.ulusofona.cd.projeto.mapper.RestaurantMapper;
+import pt.ulusofona.cd.projeto.model.MenuItem;
 import pt.ulusofona.cd.projeto.model.Restaurant;
 import pt.ulusofona.cd.projeto.repository.RestaurantRepository;
 
@@ -63,5 +64,4 @@ public class RestaurantService {
         repository.deleteById(restaurantId);
         return restaurant;
     }
-
 }

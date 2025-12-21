@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pt.ulusofona.cd.projeto.dto.MenuItemResponse;
 import pt.ulusofona.cd.projeto.dto.RestaurantRequest;
 import pt.ulusofona.cd.projeto.dto.RestaurantResponse;
 import pt.ulusofona.cd.projeto.mapper.RestaurantMapper;
@@ -21,6 +22,7 @@ public class RestaurantController {
     // Const
     private final RestaurantService service;
 
+    // Restaurant table
     // Get
     @GetMapping
     public ResponseEntity<List<RestaurantResponse>> getAllRestaurants() {

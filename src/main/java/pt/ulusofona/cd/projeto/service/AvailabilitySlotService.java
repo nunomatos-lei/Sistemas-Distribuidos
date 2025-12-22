@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import pt.ulusofona.cd.projeto.dto.AvailabilitySlotRequest;
 import pt.ulusofona.cd.projeto.dto.AvailabilitySlotResponse;
+import pt.ulusofona.cd.projeto.exception.AvailabilitySlotException;
+import pt.ulusofona.cd.projeto.exception.MenuItemNotFoundException;
 import pt.ulusofona.cd.projeto.mapper.AvailabilitySlotMapper;
 import pt.ulusofona.cd.projeto.model.AvailabilitySlot;
 import pt.ulusofona.cd.projeto.repository.AvailabilitySlotRepository;
@@ -26,7 +28,7 @@ public class AvailabilitySlotService {
     }
 
     public AvailabilitySlot getAvailabilitySlotsById(Long availabilitySlotId){
-        return repository.findById(availabilitySlotId).orElseThrow();
+        return repository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotException("Availability slot with id " + availabilitySlotId + " not found"));
     }
 
 
@@ -43,7 +45,7 @@ public class AvailabilitySlotService {
 
     // Put
     public AvailabilitySlot updateAvailabilitySlot(Long availabilitySlotId, AvailabilitySlotRequest request){
-        AvailabilitySlot availabilitySlot = repository.findById(availabilitySlotId).orElseThrow();
+        AvailabilitySlot availabilitySlot = repository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotException("Availability slot with id " + availabilitySlotId + " not found"));
 
         availabilitySlot.setRestaurant_id(request.getRestaurant_id());
         availabilitySlot.setDate(request.getDate());
@@ -60,7 +62,7 @@ public class AvailabilitySlotService {
 
     // Delete
     public AvailabilitySlot deleteAvailabilitySlot(Long availabilitySlotId){
-        AvailabilitySlot availabilitySlot = repository.findById(availabilitySlotId).orElseThrow();
+        AvailabilitySlot availabilitySlot = repository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotException("Availability slot with id " + availabilitySlotId + " not found"));
         repository.deleteById(availabilitySlotId);
         return availabilitySlot;
     }

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import pt.ulusofona.cd.projeto.dto.RestaurantRequest;
 import pt.ulusofona.cd.projeto.dto.RestaurantResponse;
+import pt.ulusofona.cd.projeto.exception.RestaurantNotFoundException;
 import pt.ulusofona.cd.projeto.mapper.RestaurantMapper;
 import pt.ulusofona.cd.projeto.model.MenuItem;
 import pt.ulusofona.cd.projeto.model.Restaurant;
@@ -27,7 +28,7 @@ public class RestaurantService {
     }
 
     public Restaurant getRestaurantById (Long restaurantId){
-        return repository.findById(restaurantId).orElseThrow();
+        return repository.findById(restaurantId).orElseThrow(() -> new RestaurantNotFoundException("Restaurant with id " + restaurantId + " not found"));
     }
 
 
@@ -44,7 +45,7 @@ public class RestaurantService {
 
     // Put
     public Restaurant updateRestaurant (Long restaurantId, RestaurantRequest request){
-        Restaurant restaurant = repository.findById(restaurantId).orElseThrow();
+        Restaurant restaurant = repository.findById(restaurantId).orElseThrow(() -> new RestaurantNotFoundException("Restaurant with id " + restaurantId + " not found"));
 
         restaurant.setName(request.getName());
         restaurant.setCity(request.getCity());
@@ -60,7 +61,7 @@ public class RestaurantService {
 
     // Delete
     public Restaurant deleteRestaurant (Long restaurantId){
-        Restaurant restaurant = repository.findById(restaurantId).orElseThrow();
+        Restaurant restaurant = repository.findById(restaurantId).orElseThrow(() -> new RestaurantNotFoundException("Restaurant with id " + restaurantId + " not found"));
         repository.deleteById(restaurantId);
         return restaurant;
     }

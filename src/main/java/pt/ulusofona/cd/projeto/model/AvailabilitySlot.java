@@ -22,20 +22,20 @@ public class AvailabilitySlot {
     private Long id;
 
     @Column(name = "restaurant_id", nullable = false)
-    private Long restaurant_id;
+    private Long restaurantId;
 
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
     @Column(name = "start_time", nullable = false)
-    private LocalTime start_time;
+    private LocalTime startTime;
 
     @Column(name = "end_time", nullable = false)
-    private LocalTime end_time;
+    private LocalTime endTime;
 
     @Column(name = "capacity", nullable = false)
     private int capacity;
 
     @Column(name = "seats_available", nullable = false)
-    private int seats_available;
+    private int seatsAvailable;
 }

@@ -13,20 +13,20 @@ import java.time.LocalTime;
 @Setter
 public class AvailabilitySlotRequest {
     @NotNull(message = "Availability slot restaurant id is required")
-    private Long restaurant_id;
+    private Long restaurantId;
 
     @NotNull(message = "Availability slot date is required")
     private LocalDate date;
 
     @NotNull(message = "Availability slot start time is required")
-    private LocalTime start_time;
+    private LocalTime startTime;
 
     @NotNull(message = "Availability slot end time is required")
-    private LocalTime end_time;
+    private LocalTime endTime;
 
     @NotNull(message = "Availability slot capacity is required")
     private int capacity;
 
     @NotNull(message = "Availability slot seats available is required")
-    private int seats_available;
+    private int seatsAvailable;
 }

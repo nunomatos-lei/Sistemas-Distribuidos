@@ -11,24 +11,24 @@ public class AvailabilitySlotMapper {
 
     public static AvailabilitySlot toEntity(AvailabilitySlotRequest request){
         AvailabilitySlot availabilitySlot = new AvailabilitySlot();
-        availabilitySlot.setRestaurant_id(request.getRestaurant_id());
+        availabilitySlot.setRestaurantId(request.getRestaurantId());
         availabilitySlot.setDate(request.getDate());
-        availabilitySlot.setStart_time(request.getStart_time());
-        availabilitySlot.setEnd_time(request.getEnd_time());
+        availabilitySlot.setStartTime(request.getStartTime());
+        availabilitySlot.setEndTime(request.getEndTime());
         availabilitySlot.setCapacity(request.getCapacity());
-        availabilitySlot.setSeats_available(request.getSeats_available());
+        availabilitySlot.setSeatsAvailable(request.getSeatsAvailable());
         return availabilitySlot;
     }
 
     public static AvailabilitySlotResponse toResponse(AvailabilitySlot availabilitySlot){
         AvailabilitySlotResponse response = new AvailabilitySlotResponse();
         response.setId(availabilitySlot.getId());
-        response.setRestaurant_id(availabilitySlot.getRestaurant_id());
+        response.setRestaurantId(availabilitySlot.getRestaurantId());
         response.setDate(availabilitySlot.getDate());
-        response.setStart_time(availabilitySlot.getStart_time());
-        response.setEnd_time(availabilitySlot.getEnd_time());
+        response.setStartTime(availabilitySlot.getStartTime());
+        response.setEndTime(availabilitySlot.getEndTime());
         response.setCapacity(availabilitySlot.getCapacity());
-        response.setSeats_available(availabilitySlot.getSeats_available());
+        response.setSeatsAvailable(availabilitySlot.getSeatsAvailable());
         return response;
     }
 

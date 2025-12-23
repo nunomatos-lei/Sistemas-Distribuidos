@@ -10,10 +10,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@JsonPropertyOrder({ "id", "restaurant_id", "name", "description", "price", "currency" })
+@JsonPropertyOrder({ "id", "restaurantId", "name", "description", "price", "currency" })
 public class MenuItemResponse {
     private Long id;
-    private Long restaurant_id;
+    private Long restaurantId;
     private String name;
     private String description;
     private float price;

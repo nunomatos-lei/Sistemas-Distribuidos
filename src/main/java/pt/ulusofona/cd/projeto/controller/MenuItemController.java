@@ -37,6 +37,12 @@ public class MenuItemController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/{restaurantId}/MenuItems")
+    public ResponseEntity<List<MenuItemResponse>> getMenuItemsByRestaurantId(@PathVariable Long restaurantId){
+        List<MenuItemResponse> responses = service.getMenuItemsByRestaurantId(restaurantId).stream().map(MenuItemMapper::toResponse).toList();
+        return ResponseEntity.ok(responses);
+    }
+
 
 
 

@@ -2,6 +2,7 @@ package pt.ulusofona.cd.projeto.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -12,6 +13,8 @@ import pt.ulusofona.cd.projeto.mapper.AvailabilitySlotMapper;
 import pt.ulusofona.cd.projeto.model.AvailabilitySlot;
 import pt.ulusofona.cd.projeto.service.AvailabilitySlotService;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Controller
@@ -34,6 +37,12 @@ public class AvailabilitySlotController {
         AvailabilitySlot availabilitySlot = service.getAvailabilitySlotsById(availabilitySlotId);
         AvailabilitySlotResponse response = AvailabilitySlotMapper.toResponse(availabilitySlot);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{restaurantId}/availabilitySlots")
+    public ResponseEntity<List<AvailabilitySlotResponse>> getAvailabilitySlotsByRestaurantId(@PathVariable Long restaurantId, @RequestParam(required = false) LocalDate date, @RequestParam(required = false) LocalTime time){
+        List<AvailabilitySlotResponse> responses = service.getAvailabilitySlotsByRestaurantId(restaurantId, date, time).stream().map(AvailabilitySlotMapper::toResponse).toList();
+        return ResponseEntity.ok(responses);
     }
 
 

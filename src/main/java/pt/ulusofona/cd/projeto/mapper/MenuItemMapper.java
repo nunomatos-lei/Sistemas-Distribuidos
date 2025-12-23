@@ -8,7 +8,7 @@ public class MenuItemMapper {
 
     public static MenuItem toEntity(MenuItemRequest request){
         MenuItem menuItem = new MenuItem();
-        menuItem.setRestaurant_id(request.getRestaurant_id());
+        menuItem.setRestaurantId(request.getRestaurantId());
         menuItem.setName(request.getName());
         menuItem.setDescription(request.getDescription());
         menuItem.setPrice(request.getPrice());
@@ -19,7 +19,7 @@ public class MenuItemMapper {
     public static MenuItemResponse toResponse(MenuItem menuItem){
         MenuItemResponse response = new MenuItemResponse();
         response.setId(menuItem.getId());
-        response.setRestaurant_id(menuItem.getRestaurant_id());
+        response.setRestaurantId(menuItem.getRestaurantId());
         response.setName(menuItem.getName());
         response.setDescription(menuItem.getDescription());
         response.setPrice(menuItem.getPrice());

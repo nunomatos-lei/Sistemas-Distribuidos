@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 public class MenuItemRequest {
     @NotNull(message = "Menu item restaurant id is required")
-    private Long restaurant_id;
+    private Long restaurantId;
 
     @NotBlank(message = "Menu item name is required")
     private String name;

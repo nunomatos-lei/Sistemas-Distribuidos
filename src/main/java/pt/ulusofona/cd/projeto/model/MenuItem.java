@@ -19,7 +19,7 @@ public class MenuItem {
     private Long id;
 
     @Column(name = "restaurant_id", nullable = false)
-    private Long restaurant_id;
+    private Long restaurantId;
 
     @Column(name = "name", nullable = false, length = 120)
     private String name;

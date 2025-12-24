@@ -22,10 +22,13 @@ public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", columnDefinition = "UUID")
-    private UUID reservationID;
+    private UUID id;
 
-    @Column(name = "supplier_id", columnDefinition = "UUID")
-    private UUID restaurantID;
+    @Column(name = "restaurant_id", columnDefinition = "UUID")
+    private UUID restaurantId;
+
+    @Column(name = "availability_slot_id", columnDefinition = "UUID")
+    private UUID availabilitySlotId;
 
     @NotBlank
     @Size(max = 255)
@@ -39,31 +42,14 @@ public class Reservation {
     private String customerEmail;
 
     @Min(1)
-    @Column(name = "party_size")
-    private int partySize;
-
-    @NotBlank
-    @Column(name = "status", nullable = false, length = 16)
-    private String status;
-
-    @NotNull
-    @Column(name = "scheduled_at", nullable = false)
-    private Instant scheduledAt;
+    @Column(name = "seats_reserved")
+    private int seatsReserved;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
-    @Column(name = "updated_at")
-    private Instant updatedAt;
-
     @PrePersist
     protected void onCreate() {
         createdAt = Instant.now();
-        updatedAt = Instant.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = Instant.now();
     }
 }

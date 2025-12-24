@@ -18,34 +18,46 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
 
+    //***************  Post  ***************//
     @Transactional
     public Reservation createReservation(ReservationRequest request) {
         Reservation reservation = ReservationMapper.toEntity(request);
         return reservationRepository.save(reservation);
     }
 
-    public Reservation getReservationById(UUID id) {
-        return reservationRepository.findById(id)
-                .orElseThrow(() -> new ReservationNotFoundException("Reservation not found with id: " + id));
-    }
 
+
+
+    //***************  Get  ***************//
     public List<Reservation> getAllReservations() {
         return reservationRepository.findAll();
     }
 
+    public Reservation getReservationById(UUID id) {
+        return reservationRepository.findById(id).orElseThrow(() -> new ReservationNotFoundException("Reservation not found with id: " + id));
+    }
+
+
+
+
+
+    //***************  Put  ***************//
     @Transactional
     public Reservation updateReservation(UUID id, ReservationRequest reservationDetails) {
         Reservation reservation = getReservationById(id);
 
-        reservation.setRestaurantID(reservationDetails.getRestaurantID());
+        reservation.setRestaurantId(reservationDetails.getRestaurantId());
         reservation.setCustomerName(reservationDetails.getCustomerName());
         reservation.setCustomerEmail(reservationDetails.getCustomerEmail());
-        reservation.setPartySize(reservationDetails.getPartySize());
-        reservation.setStatus(reservationDetails.getStatus());
+        reservation.setSeatsReserved(reservationDetails.getSeatsReserved());
 
         return reservationRepository.save(reservation);
     }
 
+
+
+
+    //***************  Delete  ***************//
     @Transactional
     public void deleteReservation(UUID id) {
         Reservation reservation = getReservationById(id);

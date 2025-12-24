@@ -20,22 +20,17 @@ public class ReservationController {
     private final ReservationService service;
 
     //***************  Post  ***************//
-
-
     @PostMapping
-    public ResponseEntity<ReservationResponse> create(
-            @Valid @RequestBody ReservationRequest request
-    ) {
+    public ResponseEntity<ReservationResponse> create(@Valid @RequestBody ReservationRequest request) {
         Reservation created = service.createReservation(request);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(ReservationMapper.toResponse(created));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ReservationMapper.toResponse(created));
     }
 
 
+
+
+
     //***************  Get  ***************//
-
-
     @GetMapping("/{id}")
     public ResponseEntity<ReservationResponse> getById(@PathVariable UUID id) {
         Reservation reservation = service.getReservationById(id);
@@ -45,29 +40,25 @@ public class ReservationController {
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getAll() {
         List<Reservation> reservations = service.getAllReservations();
-        List<ReservationResponse> responseList = reservations.stream()
-                .map(ReservationMapper::toResponse)
-                .toList();
+        List<ReservationResponse> responseList = reservations.stream().map(ReservationMapper::toResponse).toList();
 
         return ResponseEntity.ok(responseList);
     }
 
 
+
+
     //***************  Put  ***************//
-
-
     @PutMapping("/{id}")
-    public ResponseEntity<ReservationResponse> update(
-            @PathVariable UUID id,
-            @Valid @RequestBody ReservationRequest request
-    ) {
+    public ResponseEntity<ReservationResponse> update(@PathVariable UUID id, @Valid @RequestBody ReservationRequest request) {
         Reservation updated = service.updateReservation(id, request);
         return ResponseEntity.ok(ReservationMapper.toResponse(updated));
     }
 
 
-    //***************  Delete  ***************//
 
+
+    //***************  Delete  ***************//
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         service.deleteReservation(id);

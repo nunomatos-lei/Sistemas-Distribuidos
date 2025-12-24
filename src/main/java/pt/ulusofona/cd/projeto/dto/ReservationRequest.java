@@ -4,6 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Getter
@@ -11,8 +12,7 @@ import java.util.UUID;
 public class ReservationRequest {
 
     @NotNull
-    @NotBlank(message = "Restaurant ID is required")
-    private UUID restaurantID;
+    private UUID restaurantId;
 
     @NotBlank(message = "Customer name is required")
     private String customerName;
@@ -23,7 +23,5 @@ public class ReservationRequest {
     private String customerEmail;
 
     @Min(value = 0, message = "partySize cannot be negative")
-    private int partySize;
-
-    private String status;
+    private int seatsReserved;
 }

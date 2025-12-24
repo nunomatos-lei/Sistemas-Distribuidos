@@ -1,17 +1,23 @@
 package pt.ulusofona.cd.projeto.dto;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.sql.Time;
+import java.time.Instant;
+import java.time.LocalTime;
 import java.util.UUID;
 
 @Getter
 @Setter
+@JsonPropertyOrder({ "id", "restaurantId", "availabilitySlotId", "customerName", "customerEmail", "seatsReserved", "createdAt" })
 public class ReservationResponse {
-    private UUID reservationID;
-    private UUID restaurantID;
+    private UUID id;
+    private UUID restaurantId;
+    private UUID availabilitySlotId;
     private String customerName;
     private String customerEmail;
-    private int partySize;
-    private String status;
+    private int seatsReserved;
+    private Instant createdAt;
 }

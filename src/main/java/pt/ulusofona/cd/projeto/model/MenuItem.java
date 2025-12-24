@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "menu_item")
 @Getter
@@ -16,10 +18,10 @@ public class MenuItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "restaurant_id", nullable = false)
-    private Long restaurantId;
+    private UUID restaurantId;
 
     @Column(name = "name", nullable = false, length = 120)
     private String name;

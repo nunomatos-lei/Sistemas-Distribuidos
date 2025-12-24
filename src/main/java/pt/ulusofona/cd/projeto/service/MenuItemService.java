@@ -17,6 +17,7 @@ import pt.ulusofona.cd.projeto.model.MenuItem;
 import pt.ulusofona.cd.projeto.repository.MenuItemRepository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -43,11 +44,11 @@ public class MenuItemService {
         return repository.findAll();
     }
 
-    public MenuItem getMenuItemById(Long menuItemId){
+    public MenuItem getMenuItemById(UUID menuItemId){
         return repository.findById(menuItemId).orElseThrow(() -> new MenuItemNotFoundException("Menu item with id " + menuItemId + " not found"));
     }
 
-    public List<MenuItem> getMenuItemsByRestaurantId(@PathVariable Long restaurantId){
+    public List<MenuItem> getMenuItemsByRestaurantId(@PathVariable UUID restaurantId){
         return repository.findAllByRestaurantId(restaurantId);
     }
 
@@ -65,7 +66,7 @@ public class MenuItemService {
 
 
     // Put
-    public MenuItem updateMenuItem(Long menuItemId, MenuItemRequest request){
+    public MenuItem updateMenuItem(UUID menuItemId, MenuItemRequest request){
         MenuItem menuItem = repository.findById(menuItemId).orElseThrow(() -> new MenuItemNotFoundException("Menu item with id " + menuItemId + " not found"));
 
         menuItem.setRestaurantId(request.getRestaurantId());
@@ -82,7 +83,7 @@ public class MenuItemService {
 
 
     // Delete
-    public MenuItem deleteMenuItem(Long menuItemId){
+    public MenuItem deleteMenuItem(UUID menuItemId){
         MenuItem menuItem = repository.findById(menuItemId).orElseThrow(() -> new MenuItemNotFoundException("Menu item with id " + menuItemId + " not found"));
         repository.deleteById(menuItemId);
         return menuItem;

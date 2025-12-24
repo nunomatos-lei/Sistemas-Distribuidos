@@ -8,12 +8,13 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.UUID;
 
 @Getter
 @Setter
 public class AvailabilitySlotRequest {
     @NotNull(message = "Availability slot restaurant id is required")
-    private Long restaurantId;
+    private UUID restaurantId;
 
     @NotNull(message = "Availability slot date is required")
     private LocalDate date;

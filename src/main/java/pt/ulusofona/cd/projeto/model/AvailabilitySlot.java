@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "availability_slot")
@@ -17,12 +18,12 @@ import java.time.LocalTime;
 @AllArgsConstructor
 public class AvailabilitySlot {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "restaurant_id", nullable = false)
-    private Long restaurantId;
+    private UUID restaurantId;
 
     @Column(name = "date", nullable = false)
     private LocalDate date;

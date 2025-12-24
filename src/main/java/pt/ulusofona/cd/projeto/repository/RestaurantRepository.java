@@ -9,6 +9,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
+public interface RestaurantRepository extends JpaRepository<Restaurant, UUID> {
 
 }

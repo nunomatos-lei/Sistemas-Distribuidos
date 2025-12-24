@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @JsonPropertyOrder({ "id", "name", "city", "country", "phone", "email" })
 public class RestaurantResponse {
-    private Long id;
+    private UUID id;
     private String name;
     private String city;
     private String country;

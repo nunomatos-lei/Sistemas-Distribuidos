@@ -5,9 +5,10 @@ import pt.ulusofona.cd.projeto.model.MenuItem;
 import pt.ulusofona.cd.projeto.model.Restaurant;
 
 import java.util.List;
+import java.util.UUID;
 
-public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
+public interface MenuItemRepository extends JpaRepository<MenuItem, UUID> {
 
-    public List<MenuItem> findAllByRestaurantId(Long restaurantId);
+    public List<MenuItem> findAllByRestaurantId(UUID restaurantId);
 
 }

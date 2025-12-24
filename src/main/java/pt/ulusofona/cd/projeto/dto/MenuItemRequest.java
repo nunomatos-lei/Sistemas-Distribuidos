@@ -6,11 +6,13 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 public class MenuItemRequest {
     @NotNull(message = "Menu item restaurant id is required")
-    private Long restaurantId;
+    private UUID restaurantId;
 
     @NotBlank(message = "Menu item name is required")
     private String name;

@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -43,11 +44,11 @@ public class AvailabilitySlotService {
         return repository.findAll();
     }
 
-    public AvailabilitySlot getAvailabilitySlotsById(Long availabilitySlotId){
+    public AvailabilitySlot getAvailabilitySlotsById(UUID availabilitySlotId){
         return repository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotNotFoundException("Availability slot with id " + availabilitySlotId + " not found"));
     }
 
-    public List<AvailabilitySlot> getAvailabilitySlotsByRestaurantId(Long restaurantId, LocalDate date, LocalTime time){
+    public List<AvailabilitySlot> getAvailabilitySlotsByRestaurantId(UUID restaurantId, LocalDate date, LocalTime time){
 
         List<AvailabilitySlot> availabilitySlots = repository.findAllByRestaurantId(restaurantId);
         // All params
@@ -114,7 +115,7 @@ public class AvailabilitySlotService {
 
 
     // Put
-    public AvailabilitySlot updateAvailabilitySlot(Long availabilitySlotId, AvailabilitySlotRequest request){
+    public AvailabilitySlot updateAvailabilitySlot(UUID availabilitySlotId, AvailabilitySlotRequest request){
         AvailabilitySlot availabilitySlot = repository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotNotFoundException("Availability slot with id " + availabilitySlotId + " not found"));
 
         availabilitySlot.setRestaurantId(request.getRestaurantId());
@@ -132,7 +133,7 @@ public class AvailabilitySlotService {
 
 
     // Delete
-    public AvailabilitySlot deleteAvailabilitySlot(Long availabilitySlotId){
+    public AvailabilitySlot deleteAvailabilitySlot(UUID availabilitySlotId){
         AvailabilitySlot availabilitySlot = repository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotNotFoundException("Availability slot with id " + availabilitySlotId + " not found"));
         repository.deleteById(availabilitySlotId);
         return availabilitySlot;

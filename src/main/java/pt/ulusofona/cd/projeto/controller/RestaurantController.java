@@ -13,6 +13,7 @@ import pt.ulusofona.cd.projeto.model.Restaurant;
 import pt.ulusofona.cd.projeto.service.RestaurantService;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/restaurants")
@@ -22,7 +23,6 @@ public class RestaurantController {
     // Const
     private final RestaurantService service;
 
-    // Restaurant table
     // Get
     @GetMapping
     public ResponseEntity<List<RestaurantResponse>> getAllRestaurants() {
@@ -32,7 +32,7 @@ public class RestaurantController {
     }
 
     @GetMapping("/{restaurantId}")
-    public ResponseEntity<RestaurantResponse> getRestaurantById(@PathVariable Long restaurantId) {
+    public ResponseEntity<RestaurantResponse> getRestaurantById(@PathVariable UUID restaurantId) {
         Restaurant restaurant = service.getRestaurantById(restaurantId);
         RestaurantResponse response = RestaurantMapper.toResponse(restaurant);
         return ResponseEntity.ok(response);
@@ -54,7 +54,7 @@ public class RestaurantController {
 
     // Put
     @PutMapping("/{restaurantId}")
-    public ResponseEntity<RestaurantResponse> updateRestaurant(@PathVariable Long restaurantId, @Valid @RequestBody RestaurantRequest request){
+    public ResponseEntity<RestaurantResponse> updateRestaurant(@PathVariable UUID restaurantId, @Valid @RequestBody RestaurantRequest request){
         Restaurant restaurant = service.updateRestaurant(restaurantId, request);
         RestaurantResponse response = RestaurantMapper.toResponse(restaurant);
         return ResponseEntity.ok(response);
@@ -65,7 +65,7 @@ public class RestaurantController {
 
     // Delete
     @DeleteMapping("/{restaurantId}")
-    public ResponseEntity<RestaurantResponse> deleteRestaurant(@PathVariable Long restaurantId){
+    public ResponseEntity<RestaurantResponse> deleteRestaurant(@PathVariable UUID restaurantId){
         Restaurant restaurant = service.deleteRestaurant(restaurantId);
         RestaurantResponse response = RestaurantMapper.toResponse(restaurant);
         return ResponseEntity.ok(response);

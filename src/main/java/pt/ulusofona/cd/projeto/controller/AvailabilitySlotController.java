@@ -2,7 +2,6 @@ package pt.ulusofona.cd.projeto.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,6 +15,7 @@ import pt.ulusofona.cd.projeto.service.AvailabilitySlotService;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/api/v1/restaurants")
@@ -33,14 +33,14 @@ public class AvailabilitySlotController {
     }
 
     @GetMapping("/availabilitySlots/{availabilitySlotId}")
-    public ResponseEntity<AvailabilitySlotResponse> getAvailabilitySlotsById(@PathVariable Long availabilitySlotId){
+    public ResponseEntity<AvailabilitySlotResponse> getAvailabilitySlotsById(@PathVariable UUID availabilitySlotId){
         AvailabilitySlot availabilitySlot = service.getAvailabilitySlotsById(availabilitySlotId);
         AvailabilitySlotResponse response = AvailabilitySlotMapper.toResponse(availabilitySlot);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{restaurantId}/availabilitySlots")
-    public ResponseEntity<List<AvailabilitySlotResponse>> getAvailabilitySlotsByRestaurantId(@PathVariable Long restaurantId, @RequestParam(required = false) LocalDate date, @RequestParam(required = false) LocalTime time){
+    public ResponseEntity<List<AvailabilitySlotResponse>> getAvailabilitySlotsByRestaurantId(@PathVariable UUID restaurantId, @RequestParam(required = false) LocalDate date, @RequestParam(required = false) LocalTime time){
         List<AvailabilitySlotResponse> responses = service.getAvailabilitySlotsByRestaurantId(restaurantId, date, time).stream().map(AvailabilitySlotMapper::toResponse).toList();
         return ResponseEntity.ok(responses);
     }
@@ -61,7 +61,7 @@ public class AvailabilitySlotController {
 
     // Put
     @PutMapping("/availabilitySlots/{availabilitySlotId}")
-    public ResponseEntity<AvailabilitySlotResponse> updateAvailabilitySlot(@PathVariable Long availabilitySlotId, @Valid @RequestBody AvailabilitySlotRequest request){
+    public ResponseEntity<AvailabilitySlotResponse> updateAvailabilitySlot(@PathVariable UUID availabilitySlotId, @Valid @RequestBody AvailabilitySlotRequest request){
         AvailabilitySlot availabilitySlot = service.updateAvailabilitySlot(availabilitySlotId, request);
         AvailabilitySlotResponse response = AvailabilitySlotMapper.toResponse(availabilitySlot);
         return ResponseEntity.ok(response);
@@ -72,7 +72,7 @@ public class AvailabilitySlotController {
 
     // Delete
     @DeleteMapping("/availabilitySlots/{availabilitySlotId}")
-    public ResponseEntity<AvailabilitySlotResponse> deleteAvailabilitySlot(@PathVariable Long availabilitySlotId){
+    public ResponseEntity<AvailabilitySlotResponse> deleteAvailabilitySlot(@PathVariable UUID availabilitySlotId){
         AvailabilitySlot availabilitySlot = service.deleteAvailabilitySlot(availabilitySlotId);
         AvailabilitySlotResponse response = AvailabilitySlotMapper.toResponse(availabilitySlot);
         return ResponseEntity.ok(response);

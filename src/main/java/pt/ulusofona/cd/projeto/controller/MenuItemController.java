@@ -14,6 +14,7 @@ import pt.ulusofona.cd.projeto.service.MenuItemService;
 
 import java.awt.*;
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/api/v1/restaurants")
@@ -31,14 +32,14 @@ public class MenuItemController {
     }
 
     @GetMapping("/MenuItems/{menuItemId}")
-    public ResponseEntity<MenuItemResponse> getMenuItemById(@PathVariable Long menuItemId){
+    public ResponseEntity<MenuItemResponse> getMenuItemById(@PathVariable UUID menuItemId){
         MenuItem menuItem = service.getMenuItemById(menuItemId);
         MenuItemResponse response = MenuItemMapper.toResponse(menuItem);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{restaurantId}/MenuItems")
-    public ResponseEntity<List<MenuItemResponse>> getMenuItemsByRestaurantId(@PathVariable Long restaurantId){
+    public ResponseEntity<List<MenuItemResponse>> getMenuItemsByRestaurantId(@PathVariable UUID restaurantId){
         List<MenuItemResponse> responses = service.getMenuItemsByRestaurantId(restaurantId).stream().map(MenuItemMapper::toResponse).toList();
         return ResponseEntity.ok(responses);
     }
@@ -59,7 +60,7 @@ public class MenuItemController {
 
     // Put
     @PutMapping("/MenuItems/{menuItemId}")
-    public ResponseEntity<MenuItemResponse> updateMenuItem(@PathVariable Long menuItemId, @Valid @RequestBody MenuItemRequest request){
+    public ResponseEntity<MenuItemResponse> updateMenuItem(@PathVariable UUID menuItemId, @Valid @RequestBody MenuItemRequest request){
         MenuItem menuItem = service.updateMenuItem(menuItemId, request);
         MenuItemResponse response = MenuItemMapper.toResponse(menuItem);
         return ResponseEntity.ok(response);
@@ -70,7 +71,7 @@ public class MenuItemController {
 
     // Delete
     @DeleteMapping("/MenuItems/{menuItemId}")
-    public ResponseEntity<MenuItemResponse> deleteMenuItem(@PathVariable Long menuItemId){
+    public ResponseEntity<MenuItemResponse> deleteMenuItem(@PathVariable UUID menuItemId){
         MenuItem menuItem = service.deleteMenuItem(menuItemId);
         MenuItemResponse response = MenuItemMapper.toResponse(menuItem);
         return ResponseEntity.ok(response);

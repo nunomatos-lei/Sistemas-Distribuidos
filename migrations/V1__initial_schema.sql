@@ -1,5 +1,5 @@
 CREATE TABLE restaurant(
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(120) NOT NULL,
     city VARCHAR(120) NOT NULL,
     country VARCHAR(120) NOT NULL,
@@ -11,8 +11,8 @@ CREATE TABLE restaurant(
 
 
 CREATE TABLE menu_item (
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    restaurant_id BIGINT NOT NULL,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    restaurant_id UUID NOT NULL,
     name VARCHAR(120) NOT NULL,
     description VARCHAR(255) NOT NULL,
     price decimal NOT NULL,
@@ -25,8 +25,8 @@ CREATE TABLE menu_item (
 
 
 CREATE TABLE availability_slot (
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    restaurant_id BIGINT NOT NULL,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    restaurant_id UUID NOT NULL,
     date DATE NOT NULL,
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,

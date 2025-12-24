@@ -14,6 +14,7 @@ import pt.ulusofona.cd.projeto.model.Restaurant;
 import pt.ulusofona.cd.projeto.repository.RestaurantRepository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +28,7 @@ public class RestaurantService {
         return repository.findAll();
     }
 
-    public Restaurant getRestaurantById (Long restaurantId){
+    public Restaurant getRestaurantById (UUID restaurantId){
         return repository.findById(restaurantId).orElseThrow(() -> new RestaurantNotFoundException("Restaurant with id " + restaurantId + " not found"));
     }
 
@@ -44,7 +45,7 @@ public class RestaurantService {
 
 
     // Put
-    public Restaurant updateRestaurant (Long restaurantId, RestaurantRequest request){
+    public Restaurant updateRestaurant (UUID restaurantId, RestaurantRequest request){
         Restaurant restaurant = repository.findById(restaurantId).orElseThrow(() -> new RestaurantNotFoundException("Restaurant with id " + restaurantId + " not found"));
 
         restaurant.setName(request.getName());
@@ -60,7 +61,7 @@ public class RestaurantService {
 
 
     // Delete
-    public Restaurant deleteRestaurant (Long restaurantId){
+    public Restaurant deleteRestaurant (UUID restaurantId){
         Restaurant restaurant = repository.findById(restaurantId).orElseThrow(() -> new RestaurantNotFoundException("Restaurant with id " + restaurantId + " not found"));
         repository.deleteById(restaurantId);
         return restaurant;

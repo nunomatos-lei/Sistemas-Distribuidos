@@ -3,7 +3,10 @@ package pt.ulusofona.cd.projeto.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pt.ulusofona.cd.projeto.client.RestaurantClient;
+import pt.ulusofona.cd.projeto.dto.AvailabilitySlotDto;
 import pt.ulusofona.cd.projeto.dto.ReservationRequest;
+import pt.ulusofona.cd.projeto.dto.RestaurantDto;
 import pt.ulusofona.cd.projeto.exception.ReservationNotFoundException;
 import pt.ulusofona.cd.projeto.mapper.ReservationMapper;
 import pt.ulusofona.cd.projeto.model.Reservation;
@@ -16,12 +19,16 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ReservationService {
 
+    // Const
     private final ReservationRepository reservationRepository;
+    private final RestaurantClient restaurantClient;
 
     //***************  Post  ***************//
     @Transactional
     public Reservation createReservation(ReservationRequest request) {
+        List<AvailabilitySlotDto> availabilitySlotDtos = restaurantClient.getAvailabilitySlotsByRestaurantId(request.getRestaurantId());
         Reservation reservation = ReservationMapper.toEntity(request);
+        reservation.setAvailabilitySlotId(availabilitySlotDtos.getFirst().getId());
         return reservationRepository.save(reservation);
     }
 

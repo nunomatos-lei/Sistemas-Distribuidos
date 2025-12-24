@@ -19,6 +19,9 @@ public class ReservationController {
 
     private final ReservationService service;
 
+    //***************  Post  ***************//
+
+
     @PostMapping
     public ResponseEntity<ReservationResponse> create(
             @Valid @RequestBody ReservationRequest request
@@ -28,6 +31,10 @@ public class ReservationController {
                 .status(HttpStatus.CREATED)
                 .body(ReservationMapper.toResponse(created));
     }
+
+
+    //***************  Get  ***************//
+
 
     @GetMapping("/{id}")
     public ResponseEntity<ReservationResponse> getById(@PathVariable UUID id) {
@@ -45,6 +52,10 @@ public class ReservationController {
         return ResponseEntity.ok(responseList);
     }
 
+
+    //***************  Put  ***************//
+
+
     @PutMapping("/{id}")
     public ResponseEntity<ReservationResponse> update(
             @PathVariable UUID id,
@@ -53,6 +64,9 @@ public class ReservationController {
         Reservation updated = service.updateReservation(id, request);
         return ResponseEntity.ok(ReservationMapper.toResponse(updated));
     }
+
+
+    //***************  Delete  ***************//
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {

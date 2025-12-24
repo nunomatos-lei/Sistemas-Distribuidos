@@ -6,10 +6,5 @@ CREATE TABLE notifications (
     status VARCHAR(20) NOT NULL,
     sent_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ,
-
-    CONSTRAINT fk_reservation
-        FOREIGN KEY(reservation_id)
-        REFERENCES reservations(id)
-        ON DELETE CASCADE
+    updated_at TIMESTAMPTZ
 );

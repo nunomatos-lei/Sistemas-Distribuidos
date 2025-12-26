@@ -47,7 +47,7 @@ public class Reservation {
     @Column(name = "seats_reserved")
     private int seatsReserved;
 
-    @Column(name = "status", nullable = false, updatable = false)
+    @Column(name = "status", nullable = false)
     private String status = "PENDING";
 
     @Column(name = "scheduled_day", nullable = false, updatable = false)

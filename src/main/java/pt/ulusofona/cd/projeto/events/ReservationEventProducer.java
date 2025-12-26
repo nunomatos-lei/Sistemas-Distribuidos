@@ -1,9 +1,11 @@
-package pt.ulusofona.cd.projeto.dto;
+package pt.ulusofona.cd.projeto.events;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import pt.ulusofona.cd.projeto.dto.MessageEnvelope;
+import pt.ulusofona.cd.projeto.dto.ReservationResponse;
 
 import java.time.Instant;
 import java.util.UUID;

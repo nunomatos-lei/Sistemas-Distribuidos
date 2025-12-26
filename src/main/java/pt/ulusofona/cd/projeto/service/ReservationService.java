@@ -5,15 +5,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ulusofona.cd.projeto.client.RestaurantClient;
 import pt.ulusofona.cd.projeto.dto.AvailabilitySlotDto;
-import pt.ulusofona.cd.projeto.dto.ReservationEventProducer;
+import pt.ulusofona.cd.projeto.events.ReservationEventProducer;
 import pt.ulusofona.cd.projeto.dto.ReservationRequest;
-import pt.ulusofona.cd.projeto.dto.RestaurantDto;
 import pt.ulusofona.cd.projeto.exception.InvalidReservationException;
 import pt.ulusofona.cd.projeto.exception.ReservationNotFoundException;
 import pt.ulusofona.cd.projeto.mapper.ReservationMapper;
 import pt.ulusofona.cd.projeto.model.Reservation;
 import pt.ulusofona.cd.projeto.repository.ReservationRepository;
-import pt.ulusofona.cd.projeto.util.ReservationStatus;
 
 
 import java.util.List;
@@ -64,8 +62,6 @@ public class ReservationService {
         restaurantClient.updateSeats(save.getAvailabilitySlotId(), -save.getSeatsReserved());
         eventProducer.sendReservationConfirmedEvent(ReservationMapper.toResponse(save));
 
-        System.out.println("Aqui esta o que esta a dizer:" + reservation.getStatus());
-
         return save;
     }
 
@@ -82,8 +78,6 @@ public class ReservationService {
         Reservation save = reservationRepository.save(reservation);
         restaurantClient.updateSeats(save.getAvailabilitySlotId(), save.getSeatsReserved());
         eventProducer.sendReservationCanceledEvent(ReservationMapper.toResponse(save));
-
-        System.out.println("Aqui esta o que esta a dizer:" + reservation.getStatus());
 
         return save;
     }

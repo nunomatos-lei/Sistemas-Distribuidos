@@ -56,6 +56,13 @@ public class AvailabilitySlotController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @PostMapping("/availabilitySlots/{availabilitySlotId}/updateSeats")
+    public ResponseEntity<AvailabilitySlotResponse> updateSeats(@PathVariable UUID availabilitySlotId, @RequestParam(required = true) int seatUpdate){
+        AvailabilitySlot availabilitySlot =  service.updateSeats(availabilitySlotId, seatUpdate);
+        AvailabilitySlotResponse response = AvailabilitySlotMapper.toResponse(availabilitySlot);
+        return ResponseEntity.ok(response);
+    }
+
 
 
 

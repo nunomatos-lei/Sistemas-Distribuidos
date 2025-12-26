@@ -2,8 +2,13 @@ package pt.ulusofona.cd.projeto.service;
 
 import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import pt.ulusofona.cd.projeto.dto.AvailabilitySlotRequest;
+import pt.ulusofona.cd.projeto.dto.AvailabilitySlotResponse;
 import pt.ulusofona.cd.projeto.exception.AvailabilitySlotNotFoundException;
 import pt.ulusofona.cd.projeto.exception.InvalidAvailabilitySlotException;
 import pt.ulusofona.cd.projeto.mapper.AvailabilitySlotMapper;
@@ -108,6 +113,12 @@ public class AvailabilitySlotService {
 
         availabilitySlotCheck(availabilitySlot);
 
+        return repository.save(availabilitySlot);
+    }
+
+    public AvailabilitySlot updateSeats(UUID availabilitySlotId, int seatUpdate){
+        AvailabilitySlot availabilitySlot =  repository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotNotFoundException("Availability slot with id " + availabilitySlotId + " not found"));;
+        availabilitySlot.setSeatsAvailable(availabilitySlot.getSeatsAvailable() + seatUpdate);
         return repository.save(availabilitySlot);
     }
 

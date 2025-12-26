@@ -44,23 +44,11 @@ public class Notification {
     @Column(name = "status", nullable = false, length = 20)
     private String status;
 
-    @Column(name = "sent_at")
+    @Column(name = "sent_at", nullable = false, updatable = false)
     private Instant sentAt;
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @Column(name = "updated_at")
-    private Instant updatedAt;
 
     @PrePersist
     protected void onCreate() {
-        createdAt = Instant.now();
-        updatedAt = Instant.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = Instant.now();
+        sentAt = Instant.now();
     }
 }

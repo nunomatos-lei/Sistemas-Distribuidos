@@ -18,12 +18,17 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
 
+    // Post
     @Transactional
     public Notification createNotification(NotificationRequest request) {
         Notification notification = NotificationMapper.toEntity(request);
         return notificationRepository.save(notification);
     }
 
+
+
+
+    // Get
     public Notification getNotificationById(UUID id) {
         return notificationRepository.findById(id)
                 .orElseThrow(() -> new NotificationNotFoundException("Notification not found with id: " + id));
@@ -33,6 +38,10 @@ public class NotificationService {
         return notificationRepository.findAll();
     }
 
+
+
+
+    // Put
     @Transactional
     public Notification updateNotification(UUID id, NotificationRequest notificationDetails) {
         Notification notification = getNotificationById(id);
@@ -45,6 +54,10 @@ public class NotificationService {
         return notificationRepository.save(notification);
     }
 
+
+
+
+    // Delete
     @Transactional
     public void deleteNotification(UUID id) {
         Notification notification = getNotificationById(id);

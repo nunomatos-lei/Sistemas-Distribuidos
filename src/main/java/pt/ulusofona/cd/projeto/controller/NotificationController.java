@@ -19,6 +19,7 @@ public class NotificationController {
 
     private final NotificationService service;
 
+    // Post
     @PostMapping
     public ResponseEntity<NotificationResponse> create(
             @Valid @RequestBody NotificationRequest request
@@ -29,6 +30,10 @@ public class NotificationController {
                 .body(NotificationMapper.toResponse(created));
     }
 
+
+
+
+    // Get
     @GetMapping("/{id}")
     public ResponseEntity<NotificationResponse> getById(@PathVariable UUID id) {
         Notification notification = service.getNotificationById(id);
@@ -45,6 +50,10 @@ public class NotificationController {
         return ResponseEntity.ok(responseList);
     }
 
+
+
+
+    // Put
     @PutMapping("/{id}")
     public ResponseEntity<NotificationResponse> update(
             @PathVariable UUID id,
@@ -54,6 +63,10 @@ public class NotificationController {
         return ResponseEntity.ok(NotificationMapper.toResponse(updated));
     }
 
+
+
+
+    // Delete
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         service.deleteNotification(id);

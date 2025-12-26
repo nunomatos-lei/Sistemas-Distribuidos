@@ -32,7 +32,11 @@ public class ReservationEventConsumer {
             dltTopicSuffix = ".DLT"
     )
     @KafkaListener(
-            topics = "${reservation.events.reservation-created-events}",
+            topics = {
+                    "${reservation.events.reservation-created-events}",
+                    "${reservation.events.reservation-confirmed-events}",
+                    "${reservation.events.reservation-canceled-events}"
+            },
             groupId = "${spring.kafka.consumer.group-id}"
     )
     public void onReservationCreated(String rawMessage) {

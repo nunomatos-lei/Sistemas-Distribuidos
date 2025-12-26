@@ -14,7 +14,7 @@ public class MessageEnvelope<T> {
     private UUID messageId;
     private String type;
     private Instant timestamp;
-    private String correlationId;
+    private UUID correlationId;
     private String causationId;
     private T payload;
 }

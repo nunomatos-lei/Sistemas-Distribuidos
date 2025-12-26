@@ -6,12 +6,13 @@ import lombok.Setter;
 
 import java.sql.Time;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
 
 @Getter
 @Setter
-@JsonPropertyOrder({ "id", "restaurantId", "availabilitySlotId", "customerName", "customerEmail", "seatsReserved", "createdAt" })
+@JsonPropertyOrder({ "id", "restaurantId", "availabilitySlotId", "customerName", "customerEmail", "seatsReserved", "status", "scheduledDay", "scheduledTime" })
 public class ReservationResponse {
     private UUID id;
     private UUID restaurantId;
@@ -19,5 +20,7 @@ public class ReservationResponse {
     private String customerName;
     private String customerEmail;
     private int seatsReserved;
-    private Instant createdAt;
+    private String status;
+    private LocalDate scheduledDay;
+    private LocalTime scheduledTime;
 }

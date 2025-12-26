@@ -5,5 +5,7 @@ CREATE TABLE reservations (
     customer_name VARCHAR(255) NOT NULL,
     customer_email VARCHAR(255) NOT NULL,
     seats_reserved INT NOT NULL,
-    created_at TIMESTAMP NOT NULL
+    status VARCHAR(255) NOT NULL DEFAULT 'PENDING',
+    scheduled_day DATE NOT NULL,
+    scheduled_time TIME NOT NULL
 );

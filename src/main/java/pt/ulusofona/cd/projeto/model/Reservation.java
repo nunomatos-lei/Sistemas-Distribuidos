@@ -10,6 +10,8 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity
@@ -45,11 +47,12 @@ public class Reservation {
     @Column(name = "seats_reserved")
     private int seatsReserved;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
+    @Column(name = "status", nullable = false, updatable = false)
+    private String status = "PENDING";
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = Instant.now();
-    }
+    @Column(name = "scheduled_day", nullable = false, updatable = false)
+    private LocalDate scheduledDay;
+
+    @Column(name = "scheduled_time", nullable = false, updatable = false)
+    private LocalTime scheduledTime;
 }

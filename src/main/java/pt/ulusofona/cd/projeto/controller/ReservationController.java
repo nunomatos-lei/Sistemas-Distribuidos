@@ -26,6 +26,18 @@ public class ReservationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ReservationMapper.toResponse(created));
     }
 
+    @PostMapping("/{reservationId}/confirm")
+    public ResponseEntity<ReservationResponse> confirmReservation(@PathVariable UUID reservationId) {
+        Reservation reservation = service.confirmReservation(reservationId);
+        return ResponseEntity.ok(ReservationMapper.toResponse(reservation));
+    }
+
+    @PostMapping("/{reservationId}/cancel")
+    public ResponseEntity<ReservationResponse> cancelReservation(@PathVariable UUID reservationId) {
+        Reservation reservation = service.cancelReservation(reservationId);
+        return ResponseEntity.ok(ReservationMapper.toResponse(reservation));
+    }
+
 
 
 

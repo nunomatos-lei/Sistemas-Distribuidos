@@ -5,12 +5,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ulusofona.cd.projeto.client.RestaurantClient;
 import pt.ulusofona.cd.projeto.dto.AvailabilitySlotDto;
+import pt.ulusofona.cd.projeto.dto.ReservationEventProducer;
 import pt.ulusofona.cd.projeto.dto.ReservationRequest;
 import pt.ulusofona.cd.projeto.dto.RestaurantDto;
+import pt.ulusofona.cd.projeto.exception.InvalidReservationException;
 import pt.ulusofona.cd.projeto.exception.ReservationNotFoundException;
 import pt.ulusofona.cd.projeto.mapper.ReservationMapper;
 import pt.ulusofona.cd.projeto.model.Reservation;
 import pt.ulusofona.cd.projeto.repository.ReservationRepository;
+import pt.ulusofona.cd.projeto.util.ReservationStatus;
+
 
 import java.util.List;
 import java.util.UUID;
@@ -22,14 +26,66 @@ public class ReservationService {
     // Const
     private final ReservationRepository reservationRepository;
     private final RestaurantClient restaurantClient;
+    private final ReservationEventProducer eventProducer;
+
 
     //***************  Post  ***************//
     @Transactional
     public Reservation createReservation(ReservationRequest request) {
-        List<AvailabilitySlotDto> availabilitySlotDtos = restaurantClient.getAvailabilitySlotsByRestaurantId(request.getRestaurantId());
+        AvailabilitySlotDto availabilitySlotDto = restaurantClient.getAvailabilitySlotsByRestaurantId(request.getRestaurantId(), request.getScheduledDay(), request.getScheduledTime()).getFirst();
+
+        if (availabilitySlotDto.getSeatsAvailable() < request.getSeatsReserved()){
+            throw new InvalidReservationException("There are not enough seats.");
+        }
+
         Reservation reservation = ReservationMapper.toEntity(request);
-        reservation.setAvailabilitySlotId(availabilitySlotDtos.getFirst().getId());
-        return reservationRepository.save(reservation);
+        reservation.setAvailabilitySlotId(availabilitySlotDto.getId());
+
+        Reservation save = reservationRepository.save(reservation);
+        eventProducer.sendReservationCreatedEvent(ReservationMapper.toResponse(save));
+
+        return save;
+    }
+
+    @Transactional
+    public Reservation confirmReservation(UUID reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new ReservationNotFoundException("Reservation not found with id: " + reservationId));
+
+        if(reservation.getStatus().equals("CONFIRM")){
+            throw new InvalidReservationException("The reservation is already confirmed");
+        }
+        else if ((reservation.getStatus().equals("CANCEL")))
+        {
+            throw new InvalidReservationException("The reservation is canceled");
+        }
+
+        reservation.setStatus("CONFIRM");
+        Reservation save = reservationRepository.save(reservation);
+        restaurantClient.updateSeats(save.getAvailabilitySlotId(), -save.getSeatsReserved());
+        eventProducer.sendReservationConfirmedEvent(ReservationMapper.toResponse(save));
+
+        System.out.println("Aqui esta o que esta a dizer:" + reservation.getStatus());
+
+        return save;
+    }
+
+    @Transactional
+    public Reservation cancelReservation(UUID reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new ReservationNotFoundException("Reservation not found with id: " + reservationId));
+
+        if ((reservation.getStatus().equals("CANCEL")))
+        {
+            throw new InvalidReservationException("The reservation is already canceled");
+        }
+
+        reservation.setStatus("CANCEL");
+        Reservation save = reservationRepository.save(reservation);
+        restaurantClient.updateSeats(save.getAvailabilitySlotId(), save.getSeatsReserved());
+        eventProducer.sendReservationCanceledEvent(ReservationMapper.toResponse(save));
+
+        System.out.println("Aqui esta o que esta a dizer:" + reservation.getStatus());
+
+        return save;
     }
 
 

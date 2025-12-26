@@ -12,6 +12,8 @@ public class ReservationMapper {
         p.setCustomerName(dto.getCustomerName().trim());
         p.setCustomerEmail(dto.getCustomerEmail().trim());
         p.setSeatsReserved(dto.getSeatsReserved());
+        p.setScheduledDay(dto.getScheduledDay());
+        p.setScheduledTime(dto.getScheduledTime());
         return p;
     }
 
@@ -23,7 +25,9 @@ public class ReservationMapper {
         r.setCustomerName(entity.getCustomerName());
         r.setCustomerEmail(entity.getCustomerEmail());
         r.setSeatsReserved(entity.getSeatsReserved());
-        r.setCreatedAt(entity.getCreatedAt());
+        r.setStatus(entity.getStatus());
+        r.setScheduledDay(entity.getScheduledDay());
+        r.setScheduledTime(entity.getScheduledTime());
         return r;
     }
 

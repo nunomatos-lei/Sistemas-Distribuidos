@@ -17,6 +17,12 @@ spring:
       hibernate:
         format_sql: true
 
+  kafka:
+    producer:
+      bootstrap-servers: kafka:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
 feign:
   client:
     config:
@@ -24,6 +30,14 @@ feign:
         connectTimeout: 5000
         readTimeout: 10000
         loggerLevel: FULL
+
+
+
+reservation:
+  events:
+    reservation-created-events: reservation-created-events
+    reservation-confirmed-events: reservation-confirmed-events
+    reservation-canceled-events: reservation-canceled-events
 
 logging:
   level:

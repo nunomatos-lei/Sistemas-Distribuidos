@@ -22,10 +22,10 @@ public class ReservationEventProducer {
     public void sendRestaurantNotified(NotificationResponse payload) {
         MessageEnvelope<NotificationResponse> envelope = new MessageEnvelope<>(
                 UUID.randomUUID(),                // messageId
-                "ReservationCreated",             // type
+                "ReservationNotification",             // type
                 Instant.now(),                    // timestamp
                 payload.getId(),                  // correlationId (use reservation ID for traceability)
-                "reservation-service:create",     // causationId (originating operation)
+                "reservation-service:notification",     // causationId (originating operation)
                 payload                           // payload (the actual reservation data)
         );
 

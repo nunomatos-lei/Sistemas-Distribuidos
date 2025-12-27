@@ -37,30 +37,4 @@ public class NotificationService {
     public List<Notification> getAllNotifications() {
         return notificationRepository.findAll();
     }
-
-
-
-
-    // Put
-    @Transactional
-    public Notification updateNotification(UUID id, NotificationRequest notificationDetails) {
-        Notification notification = getNotificationById(id);
-
-        notification.setReservationId(notificationDetails.getReservationId());
-        notification.setEventType(notificationDetails.getEventType());
-        notification.setRecipient(notificationDetails.getRecipient());
-        notification.setStatus(notificationDetails.getStatus());
-
-        return notificationRepository.save(notification);
-    }
-
-
-
-
-    // Delete
-    @Transactional
-    public void deleteNotification(UUID id) {
-        Notification notification = getNotificationById(id);
-        notificationRepository.delete(notification);
-    }
 }

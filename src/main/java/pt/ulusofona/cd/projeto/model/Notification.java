@@ -12,7 +12,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "notifications")
+@Table(name = "notifications", uniqueConstraints = @UniqueConstraint(columnNames = {"reservation_id", "event_type"}))
 @Getter
 @Setter
 @NoArgsConstructor

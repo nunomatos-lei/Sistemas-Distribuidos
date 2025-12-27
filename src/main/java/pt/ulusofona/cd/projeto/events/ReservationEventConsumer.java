@@ -54,11 +54,11 @@ public class ReservationEventConsumer {
                 throw new RuntimeException("Simulated failure for " + reservationId);
             }
 
-            log.info("Processing Reservation Created Event for Reservation ID: {}", reservationId);
+            log.info("Processing Reservation Notified Event for Reservation ID: {}", reservationId);
 
             NotificationRequest request = new NotificationRequest();
             request.setReservationId(message.getPayload().getId());
-            request.setEventType("Restaurant notified");
+            request.setEventType(message.getType());
             request.setRecipient("Restaurant@gmail.com");
             request.setStatus(message.getPayload().getStatus());
             Notification notification = service.createNotification(request);
@@ -86,6 +86,4 @@ public class ReservationEventConsumer {
             log.error("Error in DLT handler", e);
         }
     }
-
-
 }

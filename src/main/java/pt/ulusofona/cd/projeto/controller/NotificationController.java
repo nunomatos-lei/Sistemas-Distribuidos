@@ -49,28 +49,5 @@ public class NotificationController {
 
         return ResponseEntity.ok(responseList);
     }
-
-
-
-
-    // Put
-    @PutMapping("/{id}")
-    public ResponseEntity<NotificationResponse> update(
-            @PathVariable UUID id,
-            @Valid @RequestBody NotificationRequest request
-    ) {
-        Notification updated = service.updateNotification(id, request);
-        return ResponseEntity.ok(NotificationMapper.toResponse(updated));
-    }
-
-
-
-
-    // Delete
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        service.deleteNotification(id);
-        return ResponseEntity.noContent().build();
-    }
 }
 

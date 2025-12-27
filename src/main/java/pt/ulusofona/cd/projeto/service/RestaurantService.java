@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import pt.ulusofona.cd.projeto.dto.RestaurantRequest;
 import pt.ulusofona.cd.projeto.dto.RestaurantResponse;
+import pt.ulusofona.cd.projeto.exception.InvalidRestaurantException;
 import pt.ulusofona.cd.projeto.exception.RestaurantNotFoundException;
 import pt.ulusofona.cd.projeto.mapper.RestaurantMapper;
 import pt.ulusofona.cd.projeto.model.MenuItem;
@@ -63,7 +64,13 @@ public class RestaurantService {
     // Delete
     public Restaurant deleteRestaurant (UUID restaurantId){
         Restaurant restaurant = repository.findById(restaurantId).orElseThrow(() -> new RestaurantNotFoundException("Restaurant with id " + restaurantId + " not found"));
-        repository.deleteById(restaurantId);
+
+        try {
+            repository.deleteById(restaurantId);
+        } catch (RuntimeException e) {
+            throw new InvalidRestaurantException("Cannot delete restaurant with menu items, availability slots or reservations");
+        }
+
         return restaurant;
     }
 }

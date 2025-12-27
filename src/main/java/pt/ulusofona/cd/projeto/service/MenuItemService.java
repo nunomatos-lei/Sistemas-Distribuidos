@@ -1,20 +1,15 @@
 package pt.ulusofona.cd.projeto.service;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import pt.ulusofona.cd.projeto.dto.MenuItemRequest;
-import pt.ulusofona.cd.projeto.dto.MenuItemResponse;
-import pt.ulusofona.cd.projeto.exception.InvalidAvailabilitySlotException;
 import pt.ulusofona.cd.projeto.exception.InvalidMenuItemException;
 import pt.ulusofona.cd.projeto.exception.MenuItemNotFoundException;
-import pt.ulusofona.cd.projeto.exception.RestaurantNotFoundException;
 import pt.ulusofona.cd.projeto.mapper.MenuItemMapper;
-import pt.ulusofona.cd.projeto.model.AvailabilitySlot;
 import pt.ulusofona.cd.projeto.model.MenuItem;
 import pt.ulusofona.cd.projeto.repository.MenuItemRepository;
+import pt.ulusofona.cd.projeto.repository.RestaurantRepository;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,7 +19,8 @@ import java.util.UUID;
 public class MenuItemService {
 
     // Const
-    private final MenuItemRepository repository;
+    private final MenuItemRepository menuItemRepository;
+    private final RestaurantRepository restaurantRepository;
 
 
 
@@ -41,15 +37,15 @@ public class MenuItemService {
 
     // Get
     public List<MenuItem> getAllMenuItems(){
-        return repository.findAll();
+        return menuItemRepository.findAll();
     }
 
     public MenuItem getMenuItemById(UUID menuItemId){
-        return repository.findById(menuItemId).orElseThrow(() -> new MenuItemNotFoundException("Menu item with id " + menuItemId + " not found"));
+        return menuItemRepository.findById(menuItemId).orElseThrow(() -> new MenuItemNotFoundException("Menu item with id " + menuItemId + " not found"));
     }
 
     public List<MenuItem> getMenuItemsByRestaurantId(@PathVariable UUID restaurantId){
-        return repository.findAllByRestaurantId(restaurantId);
+        return menuItemRepository.findAllByRestaurantId(restaurantId);
     }
 
 
@@ -57,9 +53,10 @@ public class MenuItemService {
 
     // Post
     public MenuItem createMenuItem(MenuItemRequest request){
+        restaurantRepository.findById(request.getRestaurantId()).orElseThrow(() -> new MenuItemNotFoundException("Restaurant with id " + request.getRestaurantId() + " not found"));
         MenuItem menuItem = MenuItemMapper.toEntity(request);
         menuItemCheck(menuItem);
-        return repository.save(menuItem);
+        return menuItemRepository.save(menuItem);
     }
 
 
@@ -67,7 +64,7 @@ public class MenuItemService {
 
     // Put
     public MenuItem updateMenuItem(UUID menuItemId, MenuItemRequest request){
-        MenuItem menuItem = repository.findById(menuItemId).orElseThrow(() -> new MenuItemNotFoundException("Menu item with id " + menuItemId + " not found"));
+        MenuItem menuItem = menuItemRepository.findById(menuItemId).orElseThrow(() -> new MenuItemNotFoundException("Menu item with id " + menuItemId + " not found"));
 
         menuItem.setRestaurantId(request.getRestaurantId());
         menuItem.setName(request.getName());
@@ -76,7 +73,7 @@ public class MenuItemService {
         menuItem.setCurrency(request.getCurrency());
         menuItemCheck(menuItem);
 
-        return repository.save(menuItem);
+        return menuItemRepository.save(menuItem);
     }
 
 
@@ -84,8 +81,8 @@ public class MenuItemService {
 
     // Delete
     public MenuItem deleteMenuItem(UUID menuItemId){
-        MenuItem menuItem = repository.findById(menuItemId).orElseThrow(() -> new MenuItemNotFoundException("Menu item with id " + menuItemId + " not found"));
-        repository.deleteById(menuItemId);
+        MenuItem menuItem = menuItemRepository.findById(menuItemId).orElseThrow(() -> new MenuItemNotFoundException("Menu item with id " + menuItemId + " not found"));
+        menuItemRepository.deleteById(menuItemId);
         return menuItem;
     }
 }

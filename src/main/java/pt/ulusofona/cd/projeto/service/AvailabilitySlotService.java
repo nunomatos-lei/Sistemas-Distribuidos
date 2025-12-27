@@ -1,21 +1,18 @@
 package pt.ulusofona.cd.projeto.service;
 
-import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import pt.ulusofona.cd.projeto.dto.AvailabilitySlotRequest;
-import pt.ulusofona.cd.projeto.dto.AvailabilitySlotResponse;
 import pt.ulusofona.cd.projeto.exception.AvailabilitySlotNotFoundException;
 import pt.ulusofona.cd.projeto.exception.InvalidAvailabilitySlotException;
+import pt.ulusofona.cd.projeto.exception.MenuItemNotFoundException;
 import pt.ulusofona.cd.projeto.mapper.AvailabilitySlotMapper;
 import pt.ulusofona.cd.projeto.model.AvailabilitySlot;
 import pt.ulusofona.cd.projeto.repository.AvailabilitySlotRepository;
+import pt.ulusofona.cd.projeto.repository.RestaurantRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,19 +23,54 @@ import java.util.UUID;
 public class AvailabilitySlotService {
 
     // Const
-    private final AvailabilitySlotRepository repository;
+    private final AvailabilitySlotRepository AvailabilitySlotrepository;
+    private final RestaurantRepository restaurantRepository;
 
 
 
 
     // Func
     public void availabilitySlotCheck(AvailabilitySlot availabilitySlot){
+        // Numbers check
         if (availabilitySlot.getSeatsAvailable() < 0 || availabilitySlot.getCapacity() < 0){
             throw new InvalidAvailabilitySlotException("Seats available or capacity cannot be negative");
         }
         if (availabilitySlot.getSeatsAvailable() > availabilitySlot.getCapacity()){
             throw new InvalidAvailabilitySlotException("Seats available cannot be greater than capacity");
         }
+
+        // Mixed check
+        if(availabilitySlot.getStartTime().isAfter(availabilitySlot.getEndTime())){
+            throw new InvalidAvailabilitySlotException("Availability slots start time cannot be after the end time");
+        }
+
+        // Past check
+        LocalDateTime slotDateStartTime = LocalDateTime.of(availabilitySlot.getDate(), availabilitySlot.getStartTime());
+        if(slotDateStartTime.isBefore(LocalDateTime.now())){
+            throw new InvalidAvailabilitySlotException("Availability slots cannot be in the past");
+        }
+
+        // Overlap check
+        List<AvailabilitySlot> availabilitySlotList = AvailabilitySlotrepository.findAll();
+        for (AvailabilitySlot slot : availabilitySlotList){
+
+            if(availabilitySlot.getId().equals(slot.getId())){
+                continue;
+            }
+
+            boolean startTimeCheck = availabilitySlot.getStartTime().isAfter(slot.getStartTime()) && availabilitySlot.getStartTime().isBefore(slot.getEndTime());
+            boolean endTimeCheck = availabilitySlot.getEndTime().isAfter(slot.getStartTime()) && availabilitySlot.getEndTime().isBefore(slot.getEndTime());
+
+            boolean dateCheck = availabilitySlot.getDate().equals(slot.getDate());
+            boolean overlap = startTimeCheck || endTimeCheck;
+            boolean same = slot.getStartTime().equals(availabilitySlot.getStartTime()) && slot.getEndTime().equals(availabilitySlot.getEndTime());
+
+            if(dateCheck && (same || overlap)){
+                throw new InvalidAvailabilitySlotException("Availability slots cannot overlap");
+            }
+
+        }
+
     }
 
 
@@ -46,16 +78,21 @@ public class AvailabilitySlotService {
 
     // Get
     public List<AvailabilitySlot> getAllAvailabilitySlots(){
-        return repository.findAll();
+        return AvailabilitySlotrepository.findAll();
     }
 
     public AvailabilitySlot getAvailabilitySlotsById(UUID availabilitySlotId){
-        return repository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotNotFoundException("Availability slot with id " + availabilitySlotId + " not found"));
+        return AvailabilitySlotrepository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotNotFoundException("Availability slot with id " + availabilitySlotId + " not found"));
     }
 
     public List<AvailabilitySlot> getAvailabilitySlotsByRestaurantId(UUID restaurantId, LocalDate date, LocalTime time){
 
-        List<AvailabilitySlot> availabilitySlots = repository.findAllByRestaurantId(restaurantId);
+        List<AvailabilitySlot> availabilitySlots = AvailabilitySlotrepository.findAllByRestaurantId(restaurantId);
+
+        if(availabilitySlots.isEmpty()){
+            return availabilitySlots;
+        }
+
         // All params
         if(date != null && time != null){
 
@@ -109,17 +146,25 @@ public class AvailabilitySlotService {
 
     // Post
     public AvailabilitySlot createAvailabilitySlot(AvailabilitySlotRequest request){
+        restaurantRepository.findById(request.getRestaurantId()).orElseThrow(() -> new MenuItemNotFoundException("Restaurant with id " + request.getRestaurantId() + " not found"));
+
         AvailabilitySlot availabilitySlot = AvailabilitySlotMapper.toEntity(request);
 
         availabilitySlotCheck(availabilitySlot);
 
-        return repository.save(availabilitySlot);
+        return AvailabilitySlotrepository.save(availabilitySlot);
     }
 
     public AvailabilitySlot updateSeats(UUID availabilitySlotId, int seatUpdate){
-        AvailabilitySlot availabilitySlot =  repository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotNotFoundException("Availability slot with id " + availabilitySlotId + " not found"));;
-        availabilitySlot.setSeatsAvailable(availabilitySlot.getSeatsAvailable() + seatUpdate);
-        return repository.save(availabilitySlot);
+        AvailabilitySlot availabilitySlot =  AvailabilitySlotrepository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotNotFoundException("Availability slot with id " + availabilitySlotId + " not found"));
+
+        int seats = availabilitySlot.getSeatsAvailable() + seatUpdate;
+        if (seats < 0){
+            throw new RuntimeException();
+        }
+
+        availabilitySlot.setSeatsAvailable(seats);
+        return AvailabilitySlotrepository.save(availabilitySlot);
     }
 
 
@@ -127,7 +172,7 @@ public class AvailabilitySlotService {
 
     // Put
     public AvailabilitySlot updateAvailabilitySlot(UUID availabilitySlotId, AvailabilitySlotRequest request){
-        AvailabilitySlot availabilitySlot = repository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotNotFoundException("Availability slot with id " + availabilitySlotId + " not found"));
+        AvailabilitySlot availabilitySlot = AvailabilitySlotrepository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotNotFoundException("Availability slot with id " + availabilitySlotId + " not found"));
 
         availabilitySlot.setRestaurantId(request.getRestaurantId());
         availabilitySlot.setDate(request.getDate());
@@ -137,7 +182,7 @@ public class AvailabilitySlotService {
         availabilitySlot.setSeatsAvailable(request.getSeatsAvailable());
         availabilitySlotCheck(availabilitySlot);
 
-        return repository.save(availabilitySlot);
+        return AvailabilitySlotrepository.save(availabilitySlot);
     }
 
 
@@ -145,8 +190,14 @@ public class AvailabilitySlotService {
 
     // Delete
     public AvailabilitySlot deleteAvailabilitySlot(UUID availabilitySlotId){
-        AvailabilitySlot availabilitySlot = repository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotNotFoundException("Availability slot with id " + availabilitySlotId + " not found"));
-        repository.deleteById(availabilitySlotId);
+        AvailabilitySlot availabilitySlot = AvailabilitySlotrepository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotNotFoundException("Availability slot with id " + availabilitySlotId + " not found"));
+
+        try{
+            AvailabilitySlotrepository.deleteById(availabilitySlotId);
+        }catch (RuntimeException e){
+            throw new InvalidAvailabilitySlotException("Cannot delete availability slot with reservations");
+        }
+
         return availabilitySlot;
     }
 }

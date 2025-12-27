@@ -72,6 +72,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
+    @ExceptionHandler(InvalidRestaurantException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidRestaurantException(InvalidRestaurantException ex) {
+        Map<String, Object> error = new HashMap<>();
+        error.put("error", "Invalid restaurant");
+        error.put("message", ex.getMessage());
+        error.put("timestamp", Instant.now());
+        error.put("status", HttpStatus.NOT_FOUND.value());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
 
 
 

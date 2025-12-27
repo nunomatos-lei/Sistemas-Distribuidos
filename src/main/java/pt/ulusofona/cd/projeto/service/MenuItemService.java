@@ -2,6 +2,7 @@ package pt.ulusofona.cd.projeto.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import pt.ulusofona.cd.projeto.dto.MenuItemRequest;
 import pt.ulusofona.cd.projeto.exception.InvalidMenuItemException;
@@ -52,6 +53,7 @@ public class MenuItemService {
 
 
     // Post
+    @Transactional
     public MenuItem createMenuItem(MenuItemRequest request){
         restaurantRepository.findById(request.getRestaurantId()).orElseThrow(() -> new MenuItemNotFoundException("Restaurant with id " + request.getRestaurantId() + " not found"));
         MenuItem menuItem = MenuItemMapper.toEntity(request);
@@ -63,6 +65,7 @@ public class MenuItemService {
 
 
     // Put
+    @Transactional
     public MenuItem updateMenuItem(UUID menuItemId, MenuItemRequest request){
         MenuItem menuItem = menuItemRepository.findById(menuItemId).orElseThrow(() -> new MenuItemNotFoundException("Menu item with id " + menuItemId + " not found"));
 
@@ -80,6 +83,7 @@ public class MenuItemService {
 
 
     // Delete
+    @Transactional
     public MenuItem deleteMenuItem(UUID menuItemId){
         MenuItem menuItem = menuItemRepository.findById(menuItemId).orElseThrow(() -> new MenuItemNotFoundException("Menu item with id " + menuItemId + " not found"));
         menuItemRepository.deleteById(menuItemId);

@@ -3,6 +3,7 @@ package pt.ulusofona.cd.projeto.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import pt.ulusofona.cd.projeto.dto.RestaurantRequest;
@@ -37,6 +38,7 @@ public class RestaurantService {
 
 
     // Post
+    @Transactional
     public Restaurant createRestaurant(RestaurantRequest request){
         Restaurant restaurant = RestaurantMapper.toEntity(request);
         return repository.save(restaurant);
@@ -46,6 +48,7 @@ public class RestaurantService {
 
 
     // Put
+    @Transactional
     public Restaurant updateRestaurant (UUID restaurantId, RestaurantRequest request){
         Restaurant restaurant = repository.findById(restaurantId).orElseThrow(() -> new RestaurantNotFoundException("Restaurant with id " + restaurantId + " not found"));
 
@@ -62,6 +65,7 @@ public class RestaurantService {
 
 
     // Delete
+    @Transactional
     public Restaurant deleteRestaurant (UUID restaurantId){
         Restaurant restaurant = repository.findById(restaurantId).orElseThrow(() -> new RestaurantNotFoundException("Restaurant with id " + restaurantId + " not found"));
 

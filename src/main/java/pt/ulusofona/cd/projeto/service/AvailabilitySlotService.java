@@ -2,6 +2,7 @@ package pt.ulusofona.cd.projeto.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pt.ulusofona.cd.projeto.dto.AvailabilitySlotRequest;
 import pt.ulusofona.cd.projeto.exception.AvailabilitySlotNotFoundException;
 import pt.ulusofona.cd.projeto.exception.InvalidAvailabilitySlotException;
@@ -145,6 +146,7 @@ public class AvailabilitySlotService {
 
 
     // Post
+    @Transactional
     public AvailabilitySlot createAvailabilitySlot(AvailabilitySlotRequest request){
         restaurantRepository.findById(request.getRestaurantId()).orElseThrow(() -> new MenuItemNotFoundException("Restaurant with id " + request.getRestaurantId() + " not found"));
 
@@ -155,6 +157,7 @@ public class AvailabilitySlotService {
         return AvailabilitySlotrepository.save(availabilitySlot);
     }
 
+    @Transactional
     public AvailabilitySlot updateSeats(UUID availabilitySlotId, int seatUpdate){
         AvailabilitySlot availabilitySlot =  AvailabilitySlotrepository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotNotFoundException("Availability slot with id " + availabilitySlotId + " not found"));
 
@@ -171,6 +174,7 @@ public class AvailabilitySlotService {
 
 
     // Put
+    @Transactional
     public AvailabilitySlot updateAvailabilitySlot(UUID availabilitySlotId, AvailabilitySlotRequest request){
         AvailabilitySlot availabilitySlot = AvailabilitySlotrepository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotNotFoundException("Availability slot with id " + availabilitySlotId + " not found"));
 
@@ -189,6 +193,7 @@ public class AvailabilitySlotService {
 
 
     // Delete
+    @Transactional
     public AvailabilitySlot deleteAvailabilitySlot(UUID availabilitySlotId){
         AvailabilitySlot availabilitySlot = AvailabilitySlotrepository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotNotFoundException("Availability slot with id " + availabilitySlotId + " not found"));
 

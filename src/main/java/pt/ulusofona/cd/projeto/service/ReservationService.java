@@ -1,10 +1,13 @@
 package pt.ulusofona.cd.projeto.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import pt.ulusofona.cd.projeto.client.RestaurantClient;
 import pt.ulusofona.cd.projeto.dto.AvailabilitySlotDto;
+import pt.ulusofona.cd.projeto.dto.ReservationUpdateRequest;
 import pt.ulusofona.cd.projeto.events.ReservationEventProducer;
 import pt.ulusofona.cd.projeto.dto.ReservationRequest;
 import pt.ulusofona.cd.projeto.exception.InvalidReservationException;
@@ -30,7 +33,13 @@ public class ReservationService {
     //***************  Post  ***************//
     @Transactional
     public Reservation createReservation(ReservationRequest request) {
-        AvailabilitySlotDto availabilitySlotDto = restaurantClient.getAvailabilitySlotsByRestaurantId(request.getRestaurantId(), request.getScheduledDay(), request.getScheduledTime()).getFirst();
+        List<AvailabilitySlotDto> availabilitySlotDtos = restaurantClient.getAvailabilitySlotsByRestaurantId(request.getRestaurantId(), request.getScheduledDay(), request.getScheduledTime());
+
+        if(availabilitySlotDtos.isEmpty()){
+            throw new InvalidReservationException("There is no availability");
+        }
+
+        AvailabilitySlotDto availabilitySlotDto = availabilitySlotDtos.getFirst();
 
         if (availabilitySlotDto.getSeatsAvailable() < request.getSeatsReserved()){
             throw new InvalidReservationException("There are not enough seats.");
@@ -59,7 +68,11 @@ public class ReservationService {
 
         reservation.setStatus("CONFIRM");
         Reservation save = reservationRepository.save(reservation);
-        restaurantClient.updateSeats(save.getAvailabilitySlotId(), -save.getSeatsReserved());
+        try {
+            restaurantClient.updateSeats(save.getAvailabilitySlotId(), -save.getSeatsReserved());
+        } catch (RuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Not enough seats available");
+        }
         eventProducer.sendReservationConfirmedEvent(ReservationMapper.toResponse(save));
 
         return save;
@@ -100,13 +113,11 @@ public class ReservationService {
 
     //***************  Put  ***************//
     @Transactional
-    public Reservation updateReservation(UUID id, ReservationRequest reservationDetails) {
+    public Reservation updateReservation(UUID id, ReservationUpdateRequest reservationDetails) {
         Reservation reservation = getReservationById(id);
 
-        reservation.setRestaurantId(reservationDetails.getRestaurantId());
         reservation.setCustomerName(reservationDetails.getCustomerName());
         reservation.setCustomerEmail(reservationDetails.getCustomerEmail());
-        reservation.setSeatsReserved(reservationDetails.getSeatsReserved());
 
         return reservationRepository.save(reservation);
     }
@@ -116,8 +127,9 @@ public class ReservationService {
 
     //***************  Delete  ***************//
     @Transactional
-    public void deleteReservation(UUID id) {
+    public Reservation deleteReservation(UUID id) {
         Reservation reservation = getReservationById(id);
-        reservationRepository.delete(reservation);
+        reservationRepository.deleteById(id);
+        return reservation;
     }
 }

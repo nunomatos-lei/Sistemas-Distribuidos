@@ -4,6 +4,7 @@ package pt.ulusofona.cd.projeto.controller;
 import lombok.RequiredArgsConstructor;
 import pt.ulusofona.cd.projeto.dto.ReservationRequest;
 import pt.ulusofona.cd.projeto.dto.ReservationResponse;
+import pt.ulusofona.cd.projeto.dto.ReservationUpdateRequest;
 import pt.ulusofona.cd.projeto.model.Reservation;
 import pt.ulusofona.cd.projeto.mapper.ReservationMapper;
 import pt.ulusofona.cd.projeto.service.ReservationService;
@@ -62,7 +63,7 @@ public class ReservationController {
 
     //***************  Put  ***************//
     @PutMapping("/{id}")
-    public ResponseEntity<ReservationResponse> update(@PathVariable UUID id, @Valid @RequestBody ReservationRequest request) {
+    public ResponseEntity<ReservationResponse> update(@PathVariable UUID id, @Valid @RequestBody ReservationUpdateRequest request) {
         Reservation updated = service.updateReservation(id, request);
         return ResponseEntity.ok(ReservationMapper.toResponse(updated));
     }
@@ -72,8 +73,9 @@ public class ReservationController {
 
     //***************  Delete  ***************//
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        service.deleteReservation(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<ReservationResponse> delete(@PathVariable UUID id) {
+        Reservation reservation = service.deleteReservation(id);
+        ReservationResponse response = ReservationMapper.toResponse(reservation);
+        return ResponseEntity.ok(response);
     }
 }

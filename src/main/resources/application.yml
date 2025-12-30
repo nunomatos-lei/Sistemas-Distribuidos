@@ -1,0 +1,72 @@
+server:
+  port: ${PORT}
+
+spring:
+  application:
+    name: "payment-service-a22302691-a22306389"
+
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_DB}:5432/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  kafka:
+    producer:
+      bootstrap-servers: kafka:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      bootstrap-servers: kafka:9092
+      group-id: reservation-service-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: java.lang.String
+    listener:
+      missing-topics-fatal: false
+      ack-mode: MANUAL_IMMEDIATE
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 10000
+        loggerLevel: FULL
+
+payment:
+  events:
+    payment-paid-events: payment-paid-events
+
+reservation:
+  events:
+    reservation-paid-events: reservation-paid-events
+
+logging:
+  level:
+    pt.ulusofona.cd.projeto: DEBUG
+    feign: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html

@@ -1,6 +1,5 @@
 package pt.ulusofona.cd.projeto.events;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.DltHandler;
@@ -24,7 +23,7 @@ public class ReservationEventConsumer {
 
     private final MessageEnvelopeConverter messageConverter;
     private final NotificationService service;
-    private final ReservationEventProducer producer;
+    private final NotificationEventProducer producer;
 
     @RetryableTopic(
             attempts = "3",
@@ -34,7 +33,6 @@ public class ReservationEventConsumer {
     @KafkaListener(
             topics = {
                     "${reservation.events.reservation-created-events}",
-                    "${reservation.events.reservation-confirmed-events}",
                     "${reservation.events.reservation-canceled-events}",
                     "${payment.events.payment-paid-events}"
             },
@@ -68,6 +66,7 @@ public class ReservationEventConsumer {
 
             // Send notification to kafka
             producer.sendRestaurantNotified(response);
+            System.out.println("Email send to: Restaurant@gmail.com");
 
         } catch (Exception e) {
             log.error("Error processing message: {}", rawMessage, e);

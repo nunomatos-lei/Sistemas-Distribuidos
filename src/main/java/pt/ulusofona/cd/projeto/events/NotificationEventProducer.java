@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ReservationEventProducer {
+public class NotificationEventProducer {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 

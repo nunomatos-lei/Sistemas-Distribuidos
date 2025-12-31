@@ -64,9 +64,10 @@ public class AvailabilitySlotService {
 
             boolean dateCheck = availabilitySlot.getDate().equals(slot.getDate());
             boolean overlap = startTimeCheck || endTimeCheck;
+            boolean swallow = availabilitySlot.getStartTime().isBefore(slot.getStartTime()) && availabilitySlot.getEndTime().isAfter(slot.getEndTime());
             boolean same = slot.getStartTime().equals(availabilitySlot.getStartTime()) && slot.getEndTime().equals(availabilitySlot.getEndTime());
 
-            if(dateCheck && (same || overlap)){
+            if(dateCheck && (same || swallow || overlap)){
                 throw new InvalidAvailabilitySlotException("Availability slots cannot overlap");
             }
 

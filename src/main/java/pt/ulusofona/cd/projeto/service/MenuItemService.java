@@ -68,6 +68,7 @@ public class MenuItemService {
     @Transactional
     public MenuItem updateMenuItem(UUID menuItemId, MenuItemRequest request){
         MenuItem menuItem = menuItemRepository.findById(menuItemId).orElseThrow(() -> new MenuItemNotFoundException("Menu item with id " + menuItemId + " not found"));
+        restaurantRepository.findById(request.getRestaurantId()).orElseThrow(() -> new MenuItemNotFoundException("Restaurant with id " + request.getRestaurantId() + " not found"));
 
         menuItem.setRestaurantId(request.getRestaurantId());
         menuItem.setName(request.getName());

@@ -1,11 +1,13 @@
 package pt.ulusofona.cd.projeto.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import pt.ulusofona.cd.projeto.dto.AvailabilitySlotDto;
+import pt.ulusofona.cd.projeto.dto.MenuItemDto;
 import pt.ulusofona.cd.projeto.dto.RestaurantDto;
 
 import java.time.LocalDate;
@@ -22,6 +24,9 @@ public interface RestaurantClient {
 
     @GetMapping("/api/v1/restaurants/{restaurantId}")
     RestaurantDto getRestaurantById(@PathVariable UUID restaurantId);
+
+    @GetMapping("/api/v1/restaurants/MenuItems/{menuItemId}")
+    public ResponseEntity<MenuItemDto> getMenuItemById(@PathVariable UUID menuItemId);
 
 
 

@@ -2,6 +2,7 @@ package pt.ulusofona.cd.projeto.controller;
 
 
 import lombok.RequiredArgsConstructor;
+import pt.ulusofona.cd.projeto.dto.ReservationAddMenuItemsRequest;
 import pt.ulusofona.cd.projeto.dto.ReservationRequest;
 import pt.ulusofona.cd.projeto.dto.ReservationResponse;
 import pt.ulusofona.cd.projeto.dto.ReservationUpdateRequest;
@@ -63,8 +64,8 @@ public class ReservationController {
 
     //***************  Put  ***************//
     @PutMapping("/{id}")
-    public ResponseEntity<ReservationResponse> update(@PathVariable UUID id, @Valid @RequestBody ReservationUpdateRequest request) {
-        Reservation updated = service.updateReservation(id, request);
+    public ResponseEntity<ReservationResponse> addMenuItemsToReservation(@PathVariable UUID id, @Valid @RequestBody ReservationAddMenuItemsRequest request) {
+        Reservation updated = service.addMenuItemsToReservation(id, request);
         return ResponseEntity.ok(ReservationMapper.toResponse(updated));
     }
 

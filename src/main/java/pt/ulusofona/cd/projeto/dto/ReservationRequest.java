@@ -7,6 +7,7 @@ import lombok.Setter;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -26,6 +27,9 @@ public class ReservationRequest {
 
     @Min(value = 0, message = "partySize cannot be negative")
     private int seatsReserved;
+
+    @NotNull
+    private List<UUID> menuItemsId;
 
     @NotNull
     private LocalDate scheduledDay;

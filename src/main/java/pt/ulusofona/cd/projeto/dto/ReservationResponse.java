@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-@JsonPropertyOrder({ "id", "restaurantId", "availabilitySlotId", "customerName", "customerEmail", "seatsReserved", "status", "scheduledDay", "scheduledTime" })
+@JsonPropertyOrder({ "id", "restaurantId", "availabilitySlotId", "customerName", "customerEmail", "seatsReserved", "status", "amount", "currency", "scheduledDay", "scheduledTime" })
 public class ReservationResponse {
     private UUID id;
     private UUID restaurantId;
@@ -21,6 +21,8 @@ public class ReservationResponse {
     private String customerEmail;
     private int seatsReserved;
     private String status;
+    private float amount;
+    private String currency;
     private LocalDate scheduledDay;
     private LocalTime scheduledTime;
 }

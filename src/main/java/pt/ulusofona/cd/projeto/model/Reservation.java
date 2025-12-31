@@ -50,6 +50,12 @@ public class Reservation {
     @Column(name = "status", nullable = false)
     private String status = "PENDING";
 
+    @Column(name = "currency", nullable = false, length = 7)
+    private String currency;
+
+    @Column(name = "amount", nullable = false)
+    private float amount;
+
     @Column(name = "scheduled_day", nullable = false, updatable = false)
     private LocalDate scheduledDay;
 

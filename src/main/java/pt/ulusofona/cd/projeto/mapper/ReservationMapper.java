@@ -26,6 +26,8 @@ public class ReservationMapper {
         r.setCustomerEmail(entity.getCustomerEmail());
         r.setSeatsReserved(entity.getSeatsReserved());
         r.setStatus(entity.getStatus());
+        r.setAmount(entity.getAmount());
+        r.setCurrency(entity.getCurrency());
         r.setScheduledDay(entity.getScheduledDay());
         r.setScheduledTime(entity.getScheduledTime());
         return r;

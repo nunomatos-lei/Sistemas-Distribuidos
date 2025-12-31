@@ -38,7 +38,7 @@ public class ReservationEventConsumer {
             },
             groupId = "${spring.kafka.consumer.group-id}"
     )
-    public void onReservationCreated(String rawMessage) {
+    public void onReservationChange(String rawMessage) {
         try {
             log.info("Received raw message: {}", rawMessage);
 

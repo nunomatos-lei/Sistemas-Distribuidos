@@ -53,7 +53,11 @@ public class ReservationService {
 
         float countAmount = 0;
         for (int i = 0; i < request.getMenuItemsId().toArray().length; i++){
-            countAmount += restaurantClient.getMenuItemById(request.getMenuItemsId().get(i)).getBody().getPrice();
+            try{
+                countAmount += restaurantClient.getMenuItemById(request.getMenuItemsId().get(i)).getBody().getPrice();
+            }catch (RuntimeException e){
+                throw  new InvalidReservationException("A menu item doesn't exist");
+            }
         }
         reservation.setAmount(countAmount);
         reservation.setCurrency("EUR");
@@ -117,6 +121,9 @@ public class ReservationService {
         return reservationRepository.findById(id).orElseThrow(() -> new ReservationNotFoundException("Reservation not found with id: " + id));
     }
 
+    public List<Reservation> getReservationsByRestaurantId(UUID restaurantId) {
+        return reservationRepository.findByRestaurantId(restaurantId);
+    }
 
 
 
@@ -132,7 +139,11 @@ public class ReservationService {
 
         float countAmount = 0;
         for (int i = 0; i < request.getMenuItemsId().toArray().length; i++){
-            countAmount += restaurantClient.getMenuItemById(request.getMenuItemsId().get(i)).getBody().getPrice();
+            try{
+                countAmount += restaurantClient.getMenuItemById(request.getMenuItemsId().get(i)).getBody().getPrice();
+            }catch (RuntimeException e){
+                throw  new InvalidReservationException("A menu item doesn't exist");
+            }
         }
         reservation.setAmount(reservation.getAmount() + countAmount);
         reservation.setCurrency("EUR");

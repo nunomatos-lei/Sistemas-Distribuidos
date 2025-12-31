@@ -55,7 +55,7 @@ public class AvailabilitySlotService {
         List<AvailabilitySlot> availabilitySlotList = AvailabilitySlotrepository.findAll();
         for (AvailabilitySlot slot : availabilitySlotList){
 
-            if(availabilitySlot.getId().equals(slot.getId())){
+            if(availabilitySlot.getId() != null && availabilitySlot.getId().equals(slot.getId())){
                 continue;
             }
 

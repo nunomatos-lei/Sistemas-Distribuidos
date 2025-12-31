@@ -35,7 +35,8 @@ public class ReservationEventConsumer {
             topics = {
                     "${reservation.events.reservation-created-events}",
                     "${reservation.events.reservation-confirmed-events}",
-                    "${reservation.events.reservation-canceled-events}"
+                    "${reservation.events.reservation-canceled-events}",
+                    "${payment.events.payment-paid-events}"
             },
             groupId = "${spring.kafka.consumer.group-id}"
     )
@@ -56,6 +57,7 @@ public class ReservationEventConsumer {
 
             log.info("Processing Reservation Notified Event for Reservation ID: {}", reservationId);
 
+            // Creates a notification
             NotificationRequest request = new NotificationRequest();
             request.setReservationId(message.getPayload().getId());
             request.setEventType(message.getType());
@@ -63,6 +65,8 @@ public class ReservationEventConsumer {
             request.setStatus(message.getPayload().getStatus());
             Notification notification = service.createNotification(request);
             NotificationResponse response = NotificationMapper.toResponse(notification);
+
+            // Send notification to kafka
             producer.sendRestaurantNotified(response);
 
         } catch (Exception e) {

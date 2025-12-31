@@ -44,3 +44,7 @@ reservation:
     reservation-created-events: reservation-created-events
     reservation-confirmed-events: reservation-confirmed-events
     reservation-canceled-events: reservation-canceled-events
+
+payment:
+  events:
+    payment-paid-events: payment-paid-events

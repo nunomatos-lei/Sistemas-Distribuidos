@@ -45,6 +45,20 @@ services:
     networks:
       - project-network
 
+  pgadmin:
+    image: dpage/pgadmin4:9.8.0
+    restart: always
+    env_file: ".env"
+    depends_on:
+      notification_db:
+        condition: service_healthy
+    ports:
+      - "7779:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - project-network
+
 
 volumes:
   db_data:

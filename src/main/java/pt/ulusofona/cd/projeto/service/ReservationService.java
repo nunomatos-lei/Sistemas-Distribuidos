@@ -52,9 +52,14 @@ public class ReservationService {
         reservation.setAvailabilitySlotId(availabilitySlotDto.getId());
 
         float countAmount = 0;
+        boolean once = false;
         for (int i = 0; i < request.getMenuItemsId().toArray().length; i++){
             try{
                 countAmount += restaurantClient.getMenuItemById(request.getMenuItemsId().get(i)).getBody().getPrice();
+                if(!once){
+                    reservation.setCurrency(restaurantClient.getMenuItemById(request.getMenuItemsId().get(i)).getBody().getCurrency());
+                    once = true;
+                }
             }catch (RuntimeException e){
                 throw  new InvalidReservationException("A menu item doesn't exist");
             }
@@ -103,7 +108,9 @@ public class ReservationService {
 
         reservation.setStatus("CANCEL");
         Reservation save = reservationRepository.save(reservation);
-        restaurantClient.updateSeats(save.getAvailabilitySlotId(), save.getSeatsReserved());
+        if(reservation.getStatus().equals("CONFIRM")){
+            restaurantClient.updateSeats(save.getAvailabilitySlotId(), save.getSeatsReserved());
+        }
         eventProducer.sendReservationCanceledEvent(ReservationMapper.toResponse(save));
 
         return save;

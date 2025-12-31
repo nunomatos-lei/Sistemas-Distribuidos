@@ -106,11 +106,11 @@ public class ReservationService {
             throw new InvalidReservationException("The reservation is already canceled");
         }
 
+        if(reservation.getStatus().equals("CONFIRM")){
+            restaurantClient.updateSeats(reservation.getAvailabilitySlotId(), reservation.getSeatsReserved());
+        }
         reservation.setStatus("CANCEL");
         Reservation save = reservationRepository.save(reservation);
-        if(reservation.getStatus().equals("CONFIRM")){
-            restaurantClient.updateSeats(save.getAvailabilitySlotId(), save.getSeatsReserved());
-        }
         eventProducer.sendReservationCanceledEvent(ReservationMapper.toResponse(save));
 
         return save;

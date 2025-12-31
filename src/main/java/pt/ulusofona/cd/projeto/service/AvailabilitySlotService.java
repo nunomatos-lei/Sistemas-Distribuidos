@@ -178,6 +178,7 @@ public class AvailabilitySlotService {
     @Transactional
     public AvailabilitySlot updateAvailabilitySlot(UUID availabilitySlotId, AvailabilitySlotRequest request){
         AvailabilitySlot availabilitySlot = AvailabilitySlotrepository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotNotFoundException("Availability slot with id " + availabilitySlotId + " not found"));
+        restaurantRepository.findById(request.getRestaurantId()).orElseThrow(() -> new MenuItemNotFoundException("Restaurant with id " + request.getRestaurantId() + " not found"));
 
         availabilitySlot.setRestaurantId(request.getRestaurantId());
         availabilitySlot.setDate(request.getDate());

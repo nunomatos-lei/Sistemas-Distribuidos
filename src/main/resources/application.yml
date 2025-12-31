@@ -48,3 +48,7 @@ reservation:
 payment:
   events:
     payment-paid-events: payment-paid-events
+
+springdoc:
+  swagger-ui:
+    operations-sorter: method

@@ -39,7 +39,7 @@ public class ReservationController {
     )
     @PostMapping("/{reservationId}/confirm")
     public ResponseEntity<ReservationResponse> confirmReservation(@PathVariable UUID reservationId) {
-        Reservation reservation = service.confirmReservation(reservationId);
+        Reservation reservation = service.ReservationPayment(reservationId);
         return ResponseEntity.ok(ReservationMapper.toResponse(reservation));
     }
 

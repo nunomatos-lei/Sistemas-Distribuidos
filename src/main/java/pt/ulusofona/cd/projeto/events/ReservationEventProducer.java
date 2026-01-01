@@ -25,6 +25,9 @@ public class ReservationEventProducer {
     @Value("${reservation.events.reservation-canceled-events}")
     private String reservationCanceledEventsTopic;
 
+    @Value("${reservation.events.reservation-payment-events}")
+    private String reservationPaymentEventsTopic;
+
     public void sendReservationCreatedEvent(ReservationResponse payload) {
         MessageEnvelope<ReservationResponse> envelope = new MessageEnvelope<>(
                 UUID.randomUUID(),                // messageId
@@ -83,6 +86,26 @@ public class ReservationEventProducer {
                         System.out.println("Published ReservationCanceled event for reservation: " + payload.getId());
                     } else {
                         System.err.println("Failed to publish ReservationCanceled event: " + ex.getMessage());
+                    }
+                });
+    }
+
+    public void sendReservationPaymentEvent(ReservationResponse payload) {
+        MessageEnvelope<ReservationResponse> envelope = new MessageEnvelope<>(
+                UUID.randomUUID(),                // messageId
+                "ReservationPayment",             // type
+                Instant.now(),                    // timestamp
+                payload.getId(),                  // correlationId (use reservation ID for traceability)
+                "reservation-service:payment",     // causationId (originating operation)
+                payload                           // payload (the actual reservation data)
+        );
+
+        kafkaTemplate.send(reservationPaymentEventsTopic, payload.getId().toString(), envelope)
+                .whenComplete((result, ex) -> {
+                    if (ex == null) {
+                        System.out.println("Published ReservationConfirmed event for reservation: " + payload.getId());
+                    } else {
+                        System.err.println("Failed to publish ReservationConfirmed event: " + ex.getMessage());
                     }
                 });
     }

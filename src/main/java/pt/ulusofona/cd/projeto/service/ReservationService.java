@@ -7,11 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import pt.ulusofona.cd.projeto.client.RestaurantClient;
-import pt.ulusofona.cd.projeto.dto.AvailabilitySlotDto;
-import pt.ulusofona.cd.projeto.dto.ReservationAddMenuItemsRequest;
-import pt.ulusofona.cd.projeto.dto.ReservationUpdateRequest;
+import pt.ulusofona.cd.projeto.dto.*;
 import pt.ulusofona.cd.projeto.events.ReservationEventProducer;
-import pt.ulusofona.cd.projeto.dto.ReservationRequest;
 import pt.ulusofona.cd.projeto.exception.InvalidReservationException;
 import pt.ulusofona.cd.projeto.exception.ReservationNotFoundException;
 import pt.ulusofona.cd.projeto.mapper.ReservationMapper;
@@ -41,7 +38,6 @@ public class ReservationService {
         if(availabilitySlotDtos.isEmpty()){
             throw new InvalidReservationException("There is no availability");
         }
-
         AvailabilitySlotDto availabilitySlotDto = availabilitySlotDtos.getFirst();
 
         if (availabilitySlotDto.getSeatsAvailable() < request.getSeatsReserved()){
@@ -55,17 +51,20 @@ public class ReservationService {
         boolean once = false;
         for (int i = 0; i < request.getMenuItemsId().toArray().length; i++){
             try{
-                countAmount += restaurantClient.getMenuItemById(request.getMenuItemsId().get(i)).getBody().getPrice();
+                MenuItemDto menuItemDto = restaurantClient.getMenuItemById(request.getMenuItemsId().get(i)).getBody();
+                if (!menuItemDto.getRestaurantId().equals(reservation.getRestaurantId())){
+                    throw  new InvalidReservationException("A menu item don't have the same restaurant");
+                }
+                countAmount += menuItemDto.getPrice();
                 if(!once){
-                    reservation.setCurrency(restaurantClient.getMenuItemById(request.getMenuItemsId().get(i)).getBody().getCurrency());
+                    reservation.setCurrency(menuItemDto.getCurrency());
                     once = true;
                 }
             }catch (RuntimeException e){
-                throw  new InvalidReservationException("A menu item doesn't exist");
+                throw  new InvalidReservationException("A menu item don't have the same restaurant or the menu item doesn't exist");
             }
         }
         reservation.setAmount(countAmount);
-        reservation.setCurrency("EUR");
 
         Reservation save = reservationRepository.save(reservation);
         eventProducer.sendReservationCreatedEvent(ReservationMapper.toResponse(save));
@@ -74,7 +73,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation confirmReservation(UUID reservationId) {
+    public Reservation ReservationPayment(UUID reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new ReservationNotFoundException("Reservation not found with id: " + reservationId));
 
         if(reservation.getStatus().equals("CONFIRM")){
@@ -84,17 +83,33 @@ public class ReservationService {
         {
             throw new InvalidReservationException("The reservation is canceled");
         }
+        else if ((reservation.getStatus().equals("WAITING PAYMENT")))
+        {
+            throw new InvalidReservationException("The reservation is waiting for payment");
+        }
 
-        reservation.setStatus("CONFIRM");
-        Reservation save = reservationRepository.save(reservation);
         try {
-            restaurantClient.updateSeats(save.getAvailabilitySlotId(), -save.getSeatsReserved());
+            restaurantClient.updateSeats(reservation.getAvailabilitySlotId(), -reservation.getSeatsReserved());
         } catch (RuntimeException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Not enough seats available");
         }
-        eventProducer.sendReservationConfirmedEvent(ReservationMapper.toResponse(save));
-
+        reservation.setStatus("WAITING PAYMENT");
+        Reservation save = reservationRepository.save(reservation);
+        eventProducer.sendReservationPaymentEvent(ReservationMapper.toResponse(save));
         return save;
+    }
+
+    public void confirmReservation(UUID reservationId){
+        Reservation reservation = getReservationById(reservationId);
+
+        if ((reservation.getStatus().equals("CANCEL")))
+        {
+            throw new InvalidReservationException("The reservation is canceled");
+        }
+
+        reservation.setStatus("CONFIRM");
+        Reservation save = reservationRepository.save(reservation);
+        eventProducer.sendReservationConfirmedEvent(ReservationMapper.toResponse(save));
     }
 
     @Transactional
@@ -105,10 +120,10 @@ public class ReservationService {
         {
             throw new InvalidReservationException("The reservation is already canceled");
         }
-
-        if(reservation.getStatus().equals("CONFIRM")){
+        else if(reservation.getStatus().equals("CONFIRM") || reservation.getStatus().equals("WAITING PAYMENT")){
             restaurantClient.updateSeats(reservation.getAvailabilitySlotId(), reservation.getSeatsReserved());
         }
+
         reservation.setStatus("CANCEL");
         Reservation save = reservationRepository.save(reservation);
         eventProducer.sendReservationCanceledEvent(ReservationMapper.toResponse(save));
@@ -145,15 +160,23 @@ public class ReservationService {
         }
 
         float countAmount = 0;
+        boolean once = false;
         for (int i = 0; i < request.getMenuItemsId().toArray().length; i++){
             try{
-                countAmount += restaurantClient.getMenuItemById(request.getMenuItemsId().get(i)).getBody().getPrice();
+                MenuItemDto menuItemDto = restaurantClient.getMenuItemById(request.getMenuItemsId().get(i)).getBody();
+                if (!menuItemDto.getRestaurantId().equals(reservation.getRestaurantId())){
+                    throw  new InvalidReservationException("A menu item don't have the same restaurant");
+                }
+                countAmount += menuItemDto.getPrice();
+                if(!once){
+                    reservation.setCurrency(menuItemDto.getCurrency());
+                    once = true;
+                }
             }catch (RuntimeException e){
-                throw  new InvalidReservationException("A menu item doesn't exist");
+                throw  new InvalidReservationException("A menu item don't have the same restaurant or the menu item doesn't exist");
             }
         }
         reservation.setAmount(reservation.getAmount() + countAmount);
-        reservation.setCurrency("EUR");
 
         return reservationRepository.save(reservation);
     }

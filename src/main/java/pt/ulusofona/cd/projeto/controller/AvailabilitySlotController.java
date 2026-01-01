@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import pt.ulusofona.cd.projeto.dto.AvailabilitySlotRequest;
 import pt.ulusofona.cd.projeto.dto.AvailabilitySlotResponse;
+import pt.ulusofona.cd.projeto.dto.AvailabilitySlotUpdateRequest;
 import pt.ulusofona.cd.projeto.mapper.AvailabilitySlotMapper;
 import pt.ulusofona.cd.projeto.model.AvailabilitySlot;
 import pt.ulusofona.cd.projeto.service.AvailabilitySlotService;
@@ -93,7 +94,7 @@ public class AvailabilitySlotController {
             description = "Updates the general information of an existing availability slot."
     )
     @PutMapping("/availabilitySlots/{availabilitySlotId}")
-    public ResponseEntity<AvailabilitySlotResponse> updateAvailabilitySlot(@PathVariable UUID availabilitySlotId, @Valid @RequestBody AvailabilitySlotRequest request){
+    public ResponseEntity<AvailabilitySlotResponse> updateAvailabilitySlot(@PathVariable UUID availabilitySlotId, @Valid @RequestBody AvailabilitySlotUpdateRequest request){
         AvailabilitySlot availabilitySlot = service.updateAvailabilitySlot(availabilitySlotId, request);
         AvailabilitySlotResponse response = AvailabilitySlotMapper.toResponse(availabilitySlot);
         return ResponseEntity.ok(response);

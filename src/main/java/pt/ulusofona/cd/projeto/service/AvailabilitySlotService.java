@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ulusofona.cd.projeto.dto.AvailabilitySlotRequest;
+import pt.ulusofona.cd.projeto.dto.AvailabilitySlotUpdateRequest;
 import pt.ulusofona.cd.projeto.exception.AvailabilitySlotNotFoundException;
 import pt.ulusofona.cd.projeto.exception.InvalidAvailabilitySlotException;
 import pt.ulusofona.cd.projeto.exception.MenuItemNotFoundException;
@@ -24,14 +25,14 @@ import java.util.UUID;
 public class AvailabilitySlotService {
 
     // Const
-    private final AvailabilitySlotRepository AvailabilitySlotrepository;
+    private final AvailabilitySlotRepository AvailabilitySlotRepository;
     private final RestaurantRepository restaurantRepository;
 
 
 
 
     // Func
-    public void availabilitySlotCheck(AvailabilitySlot availabilitySlot){
+    public void availabilitySlotCheck(AvailabilitySlot availabilitySlot, UUID restaurantId){
         // Numbers check
         if (availabilitySlot.getSeatsAvailable() < 0 || availabilitySlot.getCapacity() < 0){
             throw new InvalidAvailabilitySlotException("Seats available or capacity cannot be negative");
@@ -52,7 +53,7 @@ public class AvailabilitySlotService {
         }
 
         // Overlap check
-        List<AvailabilitySlot> availabilitySlotList = AvailabilitySlotrepository.findAll();
+        List<AvailabilitySlot> availabilitySlotList = AvailabilitySlotRepository.findAllByRestaurantId(restaurantId);
         for (AvailabilitySlot slot : availabilitySlotList){
 
             if(availabilitySlot.getId() != null && availabilitySlot.getId().equals(slot.getId())){
@@ -65,7 +66,7 @@ public class AvailabilitySlotService {
             boolean dateCheck = availabilitySlot.getDate().equals(slot.getDate());
             boolean overlap = startTimeCheck || endTimeCheck;
             boolean swallow = availabilitySlot.getStartTime().isBefore(slot.getStartTime()) && availabilitySlot.getEndTime().isAfter(slot.getEndTime());
-            boolean same = slot.getStartTime().equals(availabilitySlot.getStartTime()) && slot.getEndTime().equals(availabilitySlot.getEndTime());
+            boolean same = slot.getStartTime().equals(availabilitySlot.getStartTime()) || slot.getEndTime().equals(availabilitySlot.getEndTime());
 
             if(dateCheck && (same || swallow || overlap)){
                 throw new InvalidAvailabilitySlotException("Availability slots cannot overlap");
@@ -80,16 +81,16 @@ public class AvailabilitySlotService {
 
     // Get
     public List<AvailabilitySlot> getAllAvailabilitySlots(){
-        return AvailabilitySlotrepository.findAll();
+        return AvailabilitySlotRepository.findAll();
     }
 
     public AvailabilitySlot getAvailabilitySlotsById(UUID availabilitySlotId){
-        return AvailabilitySlotrepository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotNotFoundException("Availability slot with id " + availabilitySlotId + " not found"));
+        return AvailabilitySlotRepository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotNotFoundException("Availability slot with id " + availabilitySlotId + " not found"));
     }
 
     public List<AvailabilitySlot> getAvailabilitySlotsByRestaurantId(UUID restaurantId, LocalDate date, LocalTime time){
 
-        List<AvailabilitySlot> availabilitySlots = AvailabilitySlotrepository.findAllByRestaurantId(restaurantId);
+        List<AvailabilitySlot> availabilitySlots = AvailabilitySlotRepository.findAllByRestaurantId(restaurantId);
 
         if(availabilitySlots.isEmpty()){
             return availabilitySlots;
@@ -153,14 +154,14 @@ public class AvailabilitySlotService {
 
         AvailabilitySlot availabilitySlot = AvailabilitySlotMapper.toEntity(request);
 
-        availabilitySlotCheck(availabilitySlot);
+        availabilitySlotCheck(availabilitySlot, request.getRestaurantId());
 
-        return AvailabilitySlotrepository.save(availabilitySlot);
+        return AvailabilitySlotRepository.save(availabilitySlot);
     }
 
     @Transactional
     public AvailabilitySlot updateSeats(UUID availabilitySlotId, int seatUpdate){
-        AvailabilitySlot availabilitySlot =  AvailabilitySlotrepository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotNotFoundException("Availability slot with id " + availabilitySlotId + " not found"));
+        AvailabilitySlot availabilitySlot =  AvailabilitySlotRepository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotNotFoundException("Availability slot with id " + availabilitySlotId + " not found"));
 
         int seats = availabilitySlot.getSeatsAvailable() + seatUpdate;
         if (seats < 0){
@@ -168,7 +169,7 @@ public class AvailabilitySlotService {
         }
 
         availabilitySlot.setSeatsAvailable(seats);
-        return AvailabilitySlotrepository.save(availabilitySlot);
+        return AvailabilitySlotRepository.save(availabilitySlot);
     }
 
 
@@ -176,19 +177,18 @@ public class AvailabilitySlotService {
 
     // Put
     @Transactional
-    public AvailabilitySlot updateAvailabilitySlot(UUID availabilitySlotId, AvailabilitySlotRequest request){
-        AvailabilitySlot availabilitySlot = AvailabilitySlotrepository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotNotFoundException("Availability slot with id " + availabilitySlotId + " not found"));
-        restaurantRepository.findById(request.getRestaurantId()).orElseThrow(() -> new MenuItemNotFoundException("Restaurant with id " + request.getRestaurantId() + " not found"));
+    public AvailabilitySlot updateAvailabilitySlot(UUID availabilitySlotId, AvailabilitySlotUpdateRequest request){
+        AvailabilitySlot availabilitySlot = AvailabilitySlotRepository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotNotFoundException("Availability slot with id " + availabilitySlotId + " not found"));
+        restaurantRepository.findById(availabilitySlot.getRestaurantId()).orElseThrow(() -> new MenuItemNotFoundException("Restaurant with id " + availabilitySlot.getRestaurantId() + " not found"));
 
-        availabilitySlot.setRestaurantId(request.getRestaurantId());
         availabilitySlot.setDate(request.getDate());
         availabilitySlot.setStartTime(request.getStartTime());
         availabilitySlot.setEndTime(request.getEndTime());
         availabilitySlot.setCapacity(request.getCapacity());
         availabilitySlot.setSeatsAvailable(request.getSeatsAvailable());
-        availabilitySlotCheck(availabilitySlot);
+        availabilitySlotCheck(availabilitySlot, availabilitySlot.getRestaurantId());
 
-        return AvailabilitySlotrepository.save(availabilitySlot);
+        return AvailabilitySlotRepository.save(availabilitySlot);
     }
 
 
@@ -197,10 +197,10 @@ public class AvailabilitySlotService {
     // Delete
     @Transactional
     public AvailabilitySlot deleteAvailabilitySlot(UUID availabilitySlotId){
-        AvailabilitySlot availabilitySlot = AvailabilitySlotrepository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotNotFoundException("Availability slot with id " + availabilitySlotId + " not found"));
+        AvailabilitySlot availabilitySlot = AvailabilitySlotRepository.findById(availabilitySlotId).orElseThrow(() -> new AvailabilitySlotNotFoundException("Availability slot with id " + availabilitySlotId + " not found"));
 
         try{
-            AvailabilitySlotrepository.deleteById(availabilitySlotId);
+            AvailabilitySlotRepository.deleteById(availabilitySlotId);
         }catch (RuntimeException e){
             throw new InvalidAvailabilitySlotException("Cannot delete availability slot with reservations");
         }

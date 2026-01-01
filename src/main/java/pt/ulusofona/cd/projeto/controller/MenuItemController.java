@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import pt.ulusofona.cd.projeto.dto.MenuItemRequest;
 import pt.ulusofona.cd.projeto.dto.MenuItemResponse;
+import pt.ulusofona.cd.projeto.dto.MenuItemUpdateRequest;
 import pt.ulusofona.cd.projeto.mapper.MenuItemMapper;
 import pt.ulusofona.cd.projeto.model.MenuItem;
 import pt.ulusofona.cd.projeto.service.MenuItemService;
@@ -81,7 +82,7 @@ public class MenuItemController {
             description = "Updates the details (name, price, description) of an existing menu item."
     )
     @PutMapping("/MenuItems/{menuItemId}")
-    public ResponseEntity<MenuItemResponse> updateMenuItem(@PathVariable UUID menuItemId, @Valid @RequestBody MenuItemRequest request){
+    public ResponseEntity<MenuItemResponse> updateMenuItem(@PathVariable UUID menuItemId, @Valid @RequestBody MenuItemUpdateRequest request){
         MenuItem menuItem = service.updateMenuItem(menuItemId, request);
         MenuItemResponse response = MenuItemMapper.toResponse(menuItem);
         return ResponseEntity.ok(response);

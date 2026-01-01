@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import pt.ulusofona.cd.projeto.dto.MenuItemRequest;
+import pt.ulusofona.cd.projeto.dto.MenuItemUpdateRequest;
 import pt.ulusofona.cd.projeto.exception.InvalidMenuItemException;
 import pt.ulusofona.cd.projeto.exception.MenuItemNotFoundException;
 import pt.ulusofona.cd.projeto.mapper.MenuItemMapper;
@@ -66,11 +67,10 @@ public class MenuItemService {
 
     // Put
     @Transactional
-    public MenuItem updateMenuItem(UUID menuItemId, MenuItemRequest request){
+    public MenuItem updateMenuItem(UUID menuItemId, MenuItemUpdateRequest request){
         MenuItem menuItem = menuItemRepository.findById(menuItemId).orElseThrow(() -> new MenuItemNotFoundException("Menu item with id " + menuItemId + " not found"));
-        restaurantRepository.findById(request.getRestaurantId()).orElseThrow(() -> new MenuItemNotFoundException("Restaurant with id " + request.getRestaurantId() + " not found"));
+        restaurantRepository.findById(menuItem.getRestaurantId()).orElseThrow(() -> new MenuItemNotFoundException("Restaurant with id " + menuItem.getRestaurantId() + " not found"));
 
-        menuItem.setRestaurantId(request.getRestaurantId());
         menuItem.setName(request.getName());
         menuItem.setDescription(request.getDescription());
         menuItem.setPrice(request.getPrice());

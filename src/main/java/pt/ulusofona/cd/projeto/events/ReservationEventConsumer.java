@@ -34,7 +34,7 @@ public class ReservationEventConsumer {
             topics = {
                     "${reservation.events.reservation-created-events}",
                     "${reservation.events.reservation-canceled-events}",
-                    "${payment.events.payment-paid-events}"
+                    "${reservation.events.reservation-confirmed-events}"
             },
             groupId = "${spring.kafka.consumer.group-id}"
     )
@@ -44,16 +44,10 @@ public class ReservationEventConsumer {
 
             MessageEnvelope<ReservationPayload> message = messageConverter.convertFromJson(rawMessage, ReservationPayload.class);
 
-            log.info("Processed message: {} for reservation {}", message.getType(), message.getPayload().getId());
-            log.info("Correlation ID: {}", message.getCorrelationId());
-            log.info("Timestamp: {}", message.getTimestamp());
-
             String reservationId = message.getPayload().getId().toString();
             if (reservationId.startsWith("FAIL")) {
                 throw new RuntimeException("Simulated failure for " + reservationId);
             }
-
-            log.info("Processing Reservation Notified Event for Reservation ID: {}", reservationId);
 
             // Creates a notification
             NotificationRequest request = new NotificationRequest();

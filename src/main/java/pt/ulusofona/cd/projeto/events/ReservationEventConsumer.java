@@ -23,7 +23,6 @@ public class ReservationEventConsumer {
 
     private final MessageEnvelopeConverter messageConverter;
     private final NotificationService service;
-    private final NotificationEventProducer producer;
 
     @RetryableTopic(
             attempts = "3",
@@ -50,17 +49,7 @@ public class ReservationEventConsumer {
             }
 
             // Creates a notification
-            NotificationRequest request = new NotificationRequest();
-            request.setReservationId(message.getPayload().getId());
-            request.setEventType(message.getType());
-            request.setRecipient("Restaurant@gmail.com");
-            request.setStatus(message.getPayload().getStatus());
-            Notification notification = service.createNotification(request);
-            NotificationResponse response = NotificationMapper.toResponse(notification);
-
-            // Send notification to kafka
-            producer.sendRestaurantNotified(response);
-            System.out.println("Email send to: Restaurant@gmail.com");
+            service.createNotificationConsumer(message);
 
         } catch (Exception e) {
             log.error("Error processing message: {}", rawMessage, e);

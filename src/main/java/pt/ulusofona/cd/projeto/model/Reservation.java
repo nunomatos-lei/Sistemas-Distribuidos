@@ -51,7 +51,7 @@ public class Reservation {
     private String status = "PENDING";
 
     @Column(name = "currency", nullable = false, length = 7)
-    private String currency;
+    private String currency = "EUR";
 
     @Column(name = "amount", nullable = false)
     private float amount;

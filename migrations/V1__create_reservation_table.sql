@@ -6,7 +6,7 @@ CREATE TABLE reservations (
     customer_email VARCHAR(255) NOT NULL,
     seats_reserved INT NOT NULL,
     status VARCHAR(255) NOT NULL DEFAULT 'PENDING',
-    currency VARCHAR(7) NOT NULL,
+    currency VARCHAR(7) NOT NULL DEFAULT 'EUR',
     amount DECIMAL(10,2) NOT NULL,
     scheduled_day DATE NOT NULL,
     scheduled_time TIME NOT NULL

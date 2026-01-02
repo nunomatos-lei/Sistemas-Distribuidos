@@ -47,6 +47,10 @@ public class ReservationService {
         Reservation reservation = ReservationMapper.toEntity(request);
         reservation.setAvailabilitySlotId(availabilitySlotDto.getId());
 
+        if(request.getMenuItemsId().isEmpty()){
+            throw  new InvalidReservationException("The reservation needs to have at least one menu item");
+        }
+
         float countAmount = 0;
         boolean once = false;
         for (int i = 0; i < request.getMenuItemsId().toArray().length; i++){

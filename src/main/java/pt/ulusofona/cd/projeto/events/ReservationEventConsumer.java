@@ -1,5 +1,6 @@
 package pt.ulusofona.cd.projeto.events;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.DltHandler;
@@ -8,21 +9,16 @@ import org.springframework.kafka.annotation.RetryableTopic;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.stereotype.Component;
 import pt.ulusofona.cd.projeto.dto.MessageEnvelope;
-import pt.ulusofona.cd.projeto.dto.NotificationRequest;
-import pt.ulusofona.cd.projeto.dto.NotificationResponse;
 import pt.ulusofona.cd.projeto.dto.ReservationPayload;
-import pt.ulusofona.cd.projeto.mapper.NotificationMapper;
-import pt.ulusofona.cd.projeto.model.Notification;
 import pt.ulusofona.cd.projeto.service.NotificationService;
-import pt.ulusofona.cd.projeto.util.MessageEnvelopeConverter;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class ReservationEventConsumer {
 
-    private final MessageEnvelopeConverter messageConverter;
     private final NotificationService service;
+    private final ObjectMapper objectMapper;
 
     @RetryableTopic(
             attempts = "3",
@@ -37,39 +33,61 @@ public class ReservationEventConsumer {
             },
             groupId = "${spring.kafka.consumer.group-id}"
     )
-    public void onReservationChange(String rawMessage) {
+    public void onReservationChange(MessageEnvelope<Object> envelope) {
         try {
-            log.info("Received raw message: {}", rawMessage);
+            log.info("Received envelope: {}", envelope);
+            ReservationPayload payload = objectMapper.convertValue(envelope.getPayload(), ReservationPayload.class);
 
-            MessageEnvelope<ReservationPayload> message = messageConverter.convertFromJson(rawMessage, ReservationPayload.class);
+            log.info("Processed message: {} for reservation {}", envelope.getType(), payload.getId());
+            log.info("Correlation ID: {}", envelope.getCorrelationId());
+            log.info("Timestamp: {}", envelope.getTimestamp());
 
-            String reservationId = message.getPayload().getId().toString();
+
+            if (envelope.getPayload() == null) {
+                log.warn("Payload receveid is null.");
+                return;
+            }
+            String reservationId = payload.getId().toString();
+
+
             if (reservationId.startsWith("FAIL")) {
                 throw new RuntimeException("Simulated failure for " + reservationId);
             }
 
-            // Creates a notification
-            service.createNotificationConsumer(message);
+            log.info("Processing envelope: {}", envelope);
+
+            // creates a notification
+            service.createNotificationConsumer(payload, envelope.getType());
 
         } catch (Exception e) {
-            log.error("Error processing message: {}", rawMessage, e);
-            throw e; // Permite ao mecanismo de retry tratar o erro
+            log.error("Error processing envelope: {}", envelope, e);
+            throw e;
         }
     }
     @DltHandler
-    public void handleDlt(String rawMessage) {
+    public void handleDlt(MessageEnvelope<Object> envelope) {
         try {
-            log.error("Message moved to DLT: {}", rawMessage);
+            log.error("Message moved to DLT: {}", envelope);
 
-            // Tentativa de extração de informação útil para diagnóstico
-            try {
-                MessageEnvelope<ReservationPayload> message = messageConverter.convertFromJson(rawMessage, ReservationPayload.class);
-                log.error("DLT - Notification ID: {}", message.getPayload().getId());
-            } catch (Exception e) {
-                log.error("Could not extract notification ID from DLT message", e);
+            Object rawPayload = envelope.getPayload();
+            ReservationPayload payload = null;
+
+            if (rawPayload != null) {
+                try {
+                    payload = objectMapper.convertValue(rawPayload, ReservationPayload.class);
+                } catch (IllegalArgumentException ex) {
+                    log.error("It was not possible to convert the DLT payload to ReservationPayload.", ex);
+                }
             }
+
+            if (payload != null) {
+                log.error("DLT - Permanent Failure in Reservation ID: {}", payload.getId());
+            } else {
+                log.error("DLT - Payload not readable or null.");
+            }
+
         } catch (Exception e) {
-            log.error("Error in DLT handler", e);
+            log.error("Error in DLT handler logic", e);
         }
     }
 }

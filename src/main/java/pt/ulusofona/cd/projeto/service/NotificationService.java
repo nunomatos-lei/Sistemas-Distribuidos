@@ -31,19 +31,19 @@ public class NotificationService {
     }
 
     @Transactional
-    public void createNotificationConsumer(MessageEnvelope<ReservationPayload> message) {
+    public void createNotificationConsumer(ReservationPayload payload, String type) {
         // Creates a notification
         NotificationRequest request = new NotificationRequest();
-        request.setReservationId(message.getPayload().getId());
-        request.setEventType(message.getType());
-        request.setRecipient(message.getPayload().getCustomerEmail());
-        request.setStatus(message.getPayload().getStatus());
+        request.setReservationId(payload.getId());
+        request.setEventType(type);
+        request.setRecipient(payload.getCustomerEmail());
+        request.setStatus(payload.getStatus());
         Notification notification = notificationRepository.save(NotificationMapper.toEntity(request));
         NotificationResponse response = NotificationMapper.toResponse(notification);
 
         // Send notification to kafka
         producer.sendRestaurantNotified(response);
-        System.out.println("Email send to: " + message.getPayload().getCustomerEmail());
+        System.out.println("Email send to: " + payload.getCustomerEmail());
     }
 
 

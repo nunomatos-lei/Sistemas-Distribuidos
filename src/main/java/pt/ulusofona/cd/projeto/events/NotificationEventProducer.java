@@ -24,7 +24,7 @@ public class NotificationEventProducer {
                 UUID.randomUUID(),                // messageId
                 "ReservationNotification",             // type
                 Instant.now(),                    // timestamp
-                payload.getId(),                  // correlationId (use reservation ID for traceability)
+                payload.getId(),                  // correlationId (use notification ID for traceability)
                 "reservation-service:notification",     // causationId (originating operation)
                 payload                           // payload (the actual reservation data)
         );

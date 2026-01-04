@@ -103,9 +103,9 @@ public class ReservationEventProducer {
         kafkaTemplate.send(reservationPaymentEventsTopic, payload.getId().toString(), envelope)
                 .whenComplete((result, ex) -> {
                     if (ex == null) {
-                        System.out.println("Published ReservationConfirmed event for reservation: " + payload.getId());
+                        System.out.println("Published ReservationPaid event for reservation: " + payload.getId());
                     } else {
-                        System.err.println("Failed to publish ReservationConfirmed event: " + ex.getMessage());
+                        System.err.println("Failed to publish ReservationPaid event: " + ex.getMessage());
                     }
                 });
     }
